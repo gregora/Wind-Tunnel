@@ -49,6 +49,7 @@ class Fluid {
         Particle* particles;
 
         Fluid(uint width, uint height, float dx);
+        ~Fluid();
 
         void diffuse_iteration(Particle* newParticles, float delta, float viscosity, uint i, uint j);
         void diffuse_sector(Particle* newParticles, float delta, float viscosity, uint start, uint end);
@@ -66,8 +67,7 @@ class Fluid {
 
         void physics(float delta);
 
-        //custom set_boundaries function
-        void (*set_boundaries)(Particle* particles, uint width, uint height, uint identifier) = nullptr;
+        virtual void set_boundaries(Particle* particles, uint width, uint height, uint identifier) = 0;
 
         float energy();
 
@@ -75,7 +75,5 @@ class Fluid {
 
 
 void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size = 20, bool render_energy = true, bool render_velocities = true);
-
-void set_bnd(Particle* particles, uint width, uint height, uint identifier);
 
 #endif

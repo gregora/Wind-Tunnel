@@ -2,8 +2,6 @@
 
 Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
 
-    Fluid(width, height, dx);
-
     threads = threads;
     gs_iters = gs_iters;
 
@@ -17,17 +15,9 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
 
     object.loadFromFile(object_file);
 
-    set_boundaries = tunnel_boundaries;
-
 }
 
 Tunnel::~Tunnel(){
-}
-
-void Tunnel::physics(float delta){
-
-    Fluid::physics(delta);
-
 }
 
 
@@ -50,11 +40,7 @@ void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
 
 }
 
-void tunnel_boundaries(Particle* particles, uint width, uint height, uint identifier){
-    float speed = 50;
-    sf::Image object;
-    object.loadFromFile("objects/sphere.png");
-    
+void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint identifier){   
     //top and bottom
     for(uint i = 0; i < width; i++){
         if(identifier == 1){
