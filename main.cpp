@@ -27,6 +27,7 @@ int main(int args, char** argv){
     bool render = false;
     bool render_energy = false;
     bool render_velocities = false;
+    bool render_pressure = false;
 
     for(int i = 0; i < args; i++){
         if(strcmp(argv[i], "-render") == 0){
@@ -49,6 +50,9 @@ int main(int args, char** argv){
             threads = atoi(argv[i + 1]);
         }
 
+        if(strcmp(argv[i], "-pressure") == 0){
+            render_pressure = true;
+        }
     }
 
     Tunnel t("objects/sphere.png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20);
@@ -63,7 +67,7 @@ int main(int args, char** argv){
         auto end = std::chrono::high_resolution_clock::now();
 
         window.clear();
-        drawParticles(window, t, block_size, render_energy, render_velocities);
+        drawParticles(window, t, block_size, render_energy, render_velocities, render_pressure);
         t.draw_object(window, block_size);
         
         window.display();

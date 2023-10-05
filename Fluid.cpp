@@ -221,7 +221,7 @@ float Fluid::energy(){
 }
 
 
-void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool render_energy, bool render_velocities){
+void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool render_energy, bool render_velocities, bool render_pressure){
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
     Arrow arrow;
@@ -236,8 +236,14 @@ void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool rend
                 speed = 255;
             }
 
-            //float p_color = 125 + 50*p.p;
-            float p_color = 255*p.smoke;
+            float p_color = 0;
+
+            if(render_pressure){
+                p_color = 125 + p.p;
+            }else{
+                p_color = 255*p.smoke;
+            }
+
 
             if(p_color > 255){
                 p_color = 255;
