@@ -71,9 +71,9 @@ class Fluid {
 
         float energy();
 
+        void drawParticles(sf::RenderTarget& target, int block_size, bool render_energy, bool render_velocities, bool render_pressure);
+
 };
 
-
-void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size = 20, bool render_energy = true, bool render_velocities = true, bool render_pressure = false);
 
 #endif

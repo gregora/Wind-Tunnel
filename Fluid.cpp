@@ -221,14 +221,14 @@ float Fluid::energy(){
 }
 
 
-void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool render_energy, bool render_velocities, bool render_pressure){
+void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_energy, bool render_velocities, bool render_pressure){
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
     Arrow arrow;
 
-    for(int i = 0; i < f.width; i++){
-        for(int j = 0; j < f.height; j++){
-            Particle& p = f.particles[coords2index(i, j, f.width)];
+    for(int i = 0; i < width; i++){
+        for(int j = 0; j < height; j++){
+            Particle& p = particles[coords2index(i, j, width)];
 
             float speed = 70*sqrt(p.vx * p.vx + p.vy * p.vy);
             
@@ -257,7 +257,7 @@ void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool rend
 
             rect.setPosition(i * block_size, j * block_size);
             rect.setFillColor(sf::Color(p_color, p_color, p_color));
-            window.draw(rect);
+            target.draw(rect);
 
             float ang = atan2(p.vy, p.vx);
 
@@ -273,7 +273,7 @@ void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool rend
                 speed = 100;
             }
             arrow.setScale(block_size * speed / 2000, block_size * speed / 2000);
-            window.draw(arrow);
+            target.draw(arrow);
 
         }
     }
@@ -281,7 +281,7 @@ void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool rend
 
     if(render_energy){
         //total energy as text
-        float eng = f.energy();
+        float eng = energy();
 
         sf::Font font;
         font.loadFromFile("fonts/Prototype.ttf");
@@ -297,7 +297,7 @@ void drawParticles(sf::RenderWindow& window, Fluid& f, int block_size, bool rend
         text.setStyle(sf::Text::Bold);
         text.setPosition(10, 10);
 
-        window.draw(text);
+        target.draw(text);
     }
 
 }
