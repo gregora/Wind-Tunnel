@@ -1,44 +1,38 @@
 #include "Tunnel.h"
 
-Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint threads, uint gs_iters, float speed) {
+Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
 
-    fluid = new Fluid(width, height, dx);
+    Fluid(width, height, dx);
 
-    fluid -> threads = threads;
-    fluid -> gs_iters = gs_iters;
+    threads = threads;
+    gs_iters = gs_iters;
 
     this -> speed = speed;
 
-    Fluid& f = *fluid;
-
     for(uint i = 0; i < width; i++){
         for(uint j = 0; j < height; j++){
-            f.particles[coords2index(i, j, width)].vx = speed;
+            particles[coords2index(i, j, width)].vx = speed;
         }
     }
 
     object.loadFromFile(object_file);
 
-    fluid -> set_boundaries = tunnel_boundaries;
+    set_boundaries = tunnel_boundaries;
 
 }
 
 Tunnel::~Tunnel(){
-    delete fluid;
 }
 
 void Tunnel::physics(float delta){
 
-    fluid -> physics(delta);
+    Fluid::physics(delta);
 
 }
 
 
 
 void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
-
-    uint width = fluid -> width;
-    uint height = fluid -> height;
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
 
@@ -117,8 +111,8 @@ void tunnel_boundaries(Particle* particles, uint width, uint height, uint identi
         }
     }
 
-    uint smoke_start = (uint) (0.45 * height);
-    uint smoke_end = (uint) (0.55 * height);
+    uint smoke_start = (uint) (0.40 * height);
+    uint smoke_end = (uint) (0.60 * height);
 
     if(identifier == 5){
         for(uint j = smoke_start; j < smoke_end; j++){

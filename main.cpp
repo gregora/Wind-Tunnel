@@ -63,7 +63,7 @@ int main(int args, char** argv){
         auto end = std::chrono::high_resolution_clock::now();
 
         window.clear();
-        drawParticles(window, *t.fluid, block_size, render_energy, render_velocities);
+        drawParticles(window, t, block_size, render_energy, render_velocities);
         t.draw_object(window, block_size);
         
         window.display();
