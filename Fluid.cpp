@@ -254,9 +254,10 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
                 p_color = 0;
             }
             
-
+            sf::Color c(255, 255, 255);
+            c.a = p_color;
             rect.setPosition(i * block_size, j * block_size);
-            rect.setFillColor(sf::Color(p_color, p_color, p_color));
+            rect.setFillColor(c);
             target.draw(rect);
 
             float ang = atan2(p.vy, p.vx);
@@ -273,6 +274,7 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
                 speed = 100;
             }
             arrow.setScale(block_size * speed / 2000, block_size * speed / 2000);
+
             target.draw(arrow);
 
         }

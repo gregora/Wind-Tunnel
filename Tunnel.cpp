@@ -26,13 +26,15 @@ void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
 
+    sf::Color c(9, 31, 0);
 
     for(uint i = 0; i < width; i++){
 
         for(uint j = 0; j < height; j++){
 
             rect.setPosition(i * block_size, j * block_size);
-            rect.setFillColor(object.getPixel(i, j));
+            c.a = object.getPixel(i, j).a;
+            rect.setFillColor(c);
             window.draw(rect);
         }
 
@@ -40,7 +42,8 @@ void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
 
 }
 
-void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint identifier){   
+void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint identifier){  
+
     //top and bottom
     for(uint i = 0; i < width; i++){
         if(identifier == 1){
@@ -114,8 +117,10 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
 
             if(c.a == 255){
 
-                p.vx = 0;
-                p.vy = 0;
+                if(identifier == 1)
+                    p.vx = 0;
+                if(identifier == 2)
+                    p.vy = 0;
 
                 const sf::Color& c1 = object.getPixel(i - 1, j);
                 const sf::Color& c2 = object.getPixel(i + 1, j);
@@ -150,7 +155,7 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
                     if(identifier == 4)
                         p.p = p2.p;
 
-                    if(identifier == 5)
+                    if(identifier == 3)
                         p.div = p2.div;
                 }
 
@@ -164,7 +169,7 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
                     if(identifier == 4)
                         p.p = p3.p;
 
-                    if(identifier == 5)
+                    if(identifier == 3)
                         p.div = p3.div;
                 }
 
