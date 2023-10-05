@@ -23,4 +23,6 @@ class Tunnel {
 
 };
 
+void tunnel_boundaries(Particle* particles, uint width, uint height, uint identifier);
+
 #endif
