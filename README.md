@@ -11,6 +11,7 @@ Run `make` in the root directory.
 
 ### Running
 Run `./main.out` in the root directory. The program supports the following command line arguments:
+* `-object <object name>` - the object to simulate. Only use name of the file in `/objects/` folder
 * `-energy` - shows the total energy of the system at each time step
 * `-time <time>` - sets simulation time to `<time>` seconds
 * `-velocities` - render velocity field together with smoke

@@ -22,7 +22,7 @@ int main(int args, char** argv){
     float simulation_time = 20;
     float delta = 0.04;
     uint threads = 1;
-    uint example = 1;
+    std::string object = "wing";
 
     bool render = false;
     bool render_energy = false;
@@ -53,9 +53,14 @@ int main(int args, char** argv){
         if(strcmp(argv[i], "-pressure") == 0){
             render_pressure = true;
         }
+
+        if(strcmp(argv[i], "-object") == 0){
+            object = std::string(argv[i + 1]);
+        }
+
     }
 
-    Tunnel t("objects/sphere.png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20);
+    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20);
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Fluid Simulation");
 
