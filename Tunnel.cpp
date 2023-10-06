@@ -115,8 +115,98 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
             Particle& p = particles[coords2index(i, j, width)];
             const sf::Color& c = object.getPixel(i, j);
 
-            if(c.a == 255){
 
+            int neighbours[][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+            if(c.a == 255){
+                if(identifier == 1)
+                    p.vx = 0;
+                if(identifier == 2)
+                    p.vy = 0;
+                if(identifier == 3)
+                    p.div = 0;
+                if(identifier == 4)
+                    p.p = 0;
+                if(identifier == 5)
+                    p.smoke = 0;
+
+                uint count = 0;
+                for(int k = 0; k < 4; k++){
+                    const sf::Color& c1 = object.getPixel(i + neighbours[k][0], j + neighbours[k][1]);
+                    const bool horizontal = (k == 0 || k == 2);
+
+                    if(c1.a != 255){
+                        count++;
+
+                        Particle& n = particles[coords2index(i + neighbours[k][0], j + neighbours[k][1], width)];
+
+                        if(identifier == 1 && !horizontal)
+                            p.vx += -n.vx;
+
+                        if(identifier == 2 && horizontal)
+                            p.vy += -n.vy;
+
+                        if(identifier == 4)
+                            p.p += n.p;
+
+                        if(identifier == 3)
+                            p.div += n.div;
+
+                        if(identifier == 5)
+                            p.smoke += n.smoke;
+                            
+                    }
+                }
+
+                if(count > 0){
+                    if(identifier == 4){
+                        p.p /= count;
+                    }
+
+                    if(identifier == 3){
+                        p.div /= count;
+                    }
+
+                    if(identifier == 5){
+                        p.smoke /= count;
+                    }
+                }else {
+                    int corners[][2] = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
+
+                    for(int k = 0; k < 4; k++){
+                        const sf::Color& c1 = object.getPixel(i + corners[k][0], j + corners[k][1]);
+
+                        if(c1.a != 255){
+                                
+                            Particle& n1 = particles[coords2index(i + corners[k][0], j, width)];
+                            Particle& n2 = particles[coords2index(i, j + corners[k][1], width)];
+
+                            if(identifier == 1)
+                                p.vx += -n1.vx;
+                            
+                            if(identifier == 2)
+                                p.vy += -n2.vy;
+
+                            if(identifier == 3)
+                                p.div = (n1.div + n2.div) / 2;
+
+                            if(identifier == 4)
+                                p.p = (n1.p + n2.p) / 2;
+
+                            if(identifier == 5)
+                                p.smoke = (n1.smoke + n2.smoke) / 2;
+
+                            break;
+
+                        }
+                    
+                    }
+
+                }
+
+
+
+                /*
                 if(identifier == 1)
                     p.vx = 0;
                 if(identifier == 2)
@@ -186,8 +276,9 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
                     if(identifier == 3)
                         p.div = p4.div;
                 }
-
+                */
             }
+            
         }
 
     }
