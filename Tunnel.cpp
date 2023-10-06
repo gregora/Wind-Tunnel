@@ -115,8 +115,7 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
             Particle& p = particles[coords2index(i, j, width)];
             const sf::Color& c = object.getPixel(i, j);
 
-
-            int neighbours[][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+            
 
             if(c.a == 255){
                 if(identifier == 1)
@@ -131,158 +130,64 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
                     p.smoke = 0;
 
                 uint count = 0;
-                for(int k = 0; k < 4; k++){
-                    const sf::Color& c1 = object.getPixel(i + neighbours[k][0], j + neighbours[k][1]);
-                    const bool horizontal = (k == 0 || k == 2);
+
+                int neighbours[][2] = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+
+                for(int k = 0; k < 8; k++){
+
+                    float sx = neighbours[k][0];
+                    float sy = neighbours[k][1];
+
+                    const sf::Color& c1 = object.getPixel(i + sx, j + sy);
+                    Particle& n = particles[coords2index(i + sx, j + sy, width)];
+
 
                     if(c1.a != 255){
-                        count++;
 
-                        Particle& n = particles[coords2index(i + neighbours[k][0], j + neighbours[k][1], width)];
+                        count ++;
 
-                        if(identifier == 1 && !horizontal)
-                            p.vx += -n.vx;
+                        float len_sqr = sx*sx + sy*sy;
 
-                        if(identifier == 2 && horizontal)
-                            p.vy += -n.vy;
+                        float vx = ((n.vx*sx + n.vy*sy) / len_sqr) * sx;
+                        float vy = ((n.vx*sx + n.vy*sy) / len_sqr) * (+sy);
 
-                        if(identifier == 4)
-                            p.p += n.p;
+                        if(identifier == 1)
+                            p.vx += -vx;
+                        
+                        if(identifier == 2)
+                            p.vy += -vy;
 
                         if(identifier == 3)
                             p.div += n.div;
 
+                        if(identifier == 4)
+                            p.p += n.p;
+
                         if(identifier == 5)
                             p.smoke += n.smoke;
-                        
-                        break;
                     }
+                
                 }
+                
 
                 if(count > 0){
-                    if(identifier == 4){
-                        p.p /= count;
-                    }
-
-                    if(identifier == 3){
-                        p.div /= count;
-                    }
-
-                    if(identifier == 5){
-                        p.smoke /= count;
-                    }
-                }else {
-                    int corners[][2] = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
-
-                    for(int k = 0; k < 4; k++){
-                        const sf::Color& c1 = object.getPixel(i + corners[k][0], j + corners[k][1]);
-
-                        if(c1.a != 255){
-
-                            Particle& n = particles[coords2index(i + corners[k][0], j + corners[k][1], width)];
-                            float vx = ((p.vx*corners[k][0] - p.vy*corners[k][1]) / 2) * corners[k][0];
-                            float vy = ((p.vx*corners[k][0] - p.vy*corners[k][1]) / 2) * (-corners[k][1]); 
-
-                            Particle& n1 = particles[coords2index(i + corners[k][0], j, width)];
-                            Particle& n2 = particles[coords2index(i, j + corners[k][1], width)];
-
-                            if(identifier == 1)
-                                p.vx = -vx;
-                            
-                            if(identifier == 2)
-                                p.vy = -vy;
-
-                            if(identifier == 3)
-                                p.div = n.div;
-
-                            if(identifier == 4)
-                                p.p = n.p;
-
-                            if(identifier == 5)
-                                p.smoke = n.smoke;
-
-                            break;
-
-                        }
+                    if(identifier == 1)
+                        p.vx = p.vx;
                     
-                    }
-
-                }
-
-
-
-                /*
-                if(identifier == 1)
-                    p.vx = 0;
-                if(identifier == 2)
-                    p.vy = 0;
-
-                const sf::Color& c1 = object.getPixel(i - 1, j);
-                const sf::Color& c2 = object.getPixel(i + 1, j);
-                const sf::Color& c3 = object.getPixel(i, j - 1);
-                const sf::Color& c4 = object.getPixel(i, j + 1);
-
-                Particle& p1 = particles[coords2index(i - 1, j, width)];
-                Particle& p2 = particles[coords2index(i + 1, j, width)];
-                Particle& p3 = particles[coords2index(i, j - 1, width)];
-                Particle& p4 = particles[coords2index(i, j + 1, width)];
-
-                if(c1.a != 255){
-                    if(identifier == 1)
-                        p.vx += -p1.vx;
                     if(identifier == 2)
-                        p.vy += 0;
-
-                    if(identifier == 4)
-                        p.p = p1.p;
+                        p.vy = p.vy;
 
                     if(identifier == 3)
-                        p.div = p1.div;
-                }
-
-                if(c2.a != 255){
-                    if(identifier == 1)
-                        p.vx += -p2.vx;
-
-                    if(identifier == 2)
-                        p.vy += 0;
-
-                    if(identifier == 4)
-                        p.p = p2.p;
-
-                    if(identifier == 3)
-                        p.div = p2.div;
-                }
-
-                if(c3.a != 255){
-                    if(identifier == 1)
-                        p.vx += 0;
-
-                    if (identifier == 2)
-                        p.vy += -p3.vy;
-
-                    if(identifier == 4)
-                        p.p = p3.p;
-
-                    if(identifier == 3)
-                        p.div = p3.div;
-                }
-
-                if(c4.a != 255){
-                    if(identifier == 1)
-                        p.vx += 0;
-
-                    if(identifier == 2)
-                        p.vy += -p4.vy;
-                
-                    if(identifier == 4)
-                        p.p = p4.p;
+                        p.div = p.div / count;
                     
-                    if(identifier == 3)
-                        p.div = p4.div;
+                    if(identifier == 4)
+                        p.p = p.p / count;
+
+                    if(identifier == 5)
+                        p.smoke = p.smoke / count;
                 }
-                */
-            }
+
+           }
             
         }
 
