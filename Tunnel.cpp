@@ -154,7 +154,8 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
 
                         if(identifier == 5)
                             p.smoke += n.smoke;
-                            
+                        
+                        break;
                     }
                 }
 
@@ -177,24 +178,28 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
                         const sf::Color& c1 = object.getPixel(i + corners[k][0], j + corners[k][1]);
 
                         if(c1.a != 255){
-                                
+
+                            Particle& n = particles[coords2index(i + corners[k][0], j + corners[k][1], width)];
+                            float vx = ((p.vx*corners[k][0] - p.vy*corners[k][1]) / 2) * corners[k][0];
+                            float vy = ((p.vx*corners[k][0] - p.vy*corners[k][1]) / 2) * (-corners[k][1]); 
+
                             Particle& n1 = particles[coords2index(i + corners[k][0], j, width)];
                             Particle& n2 = particles[coords2index(i, j + corners[k][1], width)];
 
                             if(identifier == 1)
-                                p.vx += -n1.vx;
+                                p.vx = -vx;
                             
                             if(identifier == 2)
-                                p.vy += -n2.vy;
+                                p.vy = -vy;
 
                             if(identifier == 3)
-                                p.div = (n1.div + n2.div) / 2;
+                                p.div = n.div;
 
                             if(identifier == 4)
-                                p.p = (n1.p + n2.p) / 2;
+                                p.p = n.p;
 
                             if(identifier == 5)
-                                p.smoke = (n1.smoke + n2.smoke) / 2;
+                                p.smoke = n.smoke;
 
                             break;
 
