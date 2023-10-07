@@ -95,7 +95,7 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
         }
 
         if(identifier == 5){
-            particles[coords2index(0, j, width)].smoke = particles[coords2index(1, j, width)].smoke;
+            particles[coords2index(0, j, width)].smoke = 0;
             particles[coords2index(width - 1, j, width)].smoke = particles[coords2index(width - 2, j, width)].smoke;
         }
     }
