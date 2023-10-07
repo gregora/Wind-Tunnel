@@ -15,6 +15,22 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
 
     object.loadFromFile(object_file);
 
+    float scalex = (float) width / object.getSize().x;
+    float scaley = (float) height / object.getSize().y;
+
+    sf::Image scaled_object;
+    scaled_object.create(width, height);
+
+    for(uint i = 0; i < width; i++){
+        for(uint j = 0; j < height; j++){
+            scaled_object.setPixel(i, j, object.getPixel(i / scalex, j / scaley));
+        }
+    }
+
+    object = scaled_object;
+
+
+
 }
 
 Tunnel::~Tunnel(){

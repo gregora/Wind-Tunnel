@@ -11,8 +11,8 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 120;
-    float HEIGHT = 100;
+    float WIDTH = 240;
+    float HEIGHT = 200;
 
     float WINDOW_WIDTH = 1200;
     float WINDOW_HEIGHT = 1000;
