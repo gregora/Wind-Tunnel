@@ -7,12 +7,6 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
 
     this -> speed = speed;
 
-    for(uint i = 0; i < width; i++){
-        for(uint j = 0; j < height; j++){
-            particles[coords2index(i, j, width)].vx = speed;
-        }
-    }
-
     object.loadFromFile(object_file);
 
     float scalex = (float) width / object.getSize().x;
@@ -28,8 +22,6 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
     }
 
     object = scaled_object;
-
-
 
 }
 
@@ -202,7 +194,6 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
                     if(identifier == 5)
                         p.smoke = p.smoke / count;
                 }
-
            }
             
         }

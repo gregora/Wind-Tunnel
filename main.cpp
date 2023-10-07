@@ -11,8 +11,8 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 240;
-    float HEIGHT = 200;
+    float WIDTH = 120;
+    float HEIGHT = 100;
 
     float WINDOW_WIDTH = 1200;
     float WINDOW_HEIGHT = 1000;
@@ -60,7 +60,7 @@ int main(int args, char** argv){
 
     }
 
-    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20);
+    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20, 50);
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Fluid Simulation");
 
