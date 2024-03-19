@@ -18,6 +18,9 @@ class Tunnel : public Fluid {
 
         void set_boundaries(Particle* particles, uint width, uint height, uint identifier);
 
+        float calculate_lift();
+        float calculate_drag();
+
 
 };
 

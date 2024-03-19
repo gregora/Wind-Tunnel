@@ -77,6 +77,10 @@ int main(int args, char** argv){
         
         window.display();
 
+        std::cout << "Lift: " << t.calculate_lift() << std::endl;
+        std::cout << "Drag: " << t.calculate_drag() << std::endl;
+
+
         if(render){
             sf::Image screenshot = window.capture();
             

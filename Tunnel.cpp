@@ -52,6 +52,16 @@ void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
 
 void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint identifier){  
 
+    //external forces (force of gravity)
+
+    for(uint i = 0; i < width; i++){
+        for(uint j = 0; j < height; j++){
+            //particles[coords2index(i, j, width)].Fy = 10;
+        }
+    }
+
+
+
     //top and bottom
     for(uint i = 0; i < width; i++){
         if(identifier == 1){
@@ -60,8 +70,8 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
         }
         
         if(identifier == 2){
-            particles[coords2index(i, 0, width)].vy = particles[coords2index(i, 1, width)].vy;
-            particles[coords2index(i, height - 1, width)].vy = particles[coords2index(i, height - 2, width)].vy;
+            particles[coords2index(i, 0, width)].vy = -particles[coords2index(i, 1, width)].vy;
+            particles[coords2index(i, height - 1, width)].vy = -particles[coords2index(i, height - 2, width)].vy;
         }
         
         if(identifier == 3){
@@ -200,4 +210,40 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
 
     }
 
+}
+
+float Tunnel::calculate_lift(){
+    float lift = 0;
+
+    for(uint i = 0; i < width; i++){
+        for(uint j = 0; j < height; j++){
+            Particle& p = particles[coords2index(i, j, width)];
+
+            const sf::Color& c = object.getPixel(i, j);
+            if(c.a == 255){
+                lift += p.vy;
+            }
+
+        }
+    }
+       
+    return lift;
+}
+
+float Tunnel::calculate_drag(){
+    float drag = 0;
+
+    for(uint i = 0; i < width; i++){
+        for(uint j = 0; j < height; j++){
+            Particle& p = particles[coords2index(i, j, width)];
+
+            const sf::Color& c = object.getPixel(i, j);
+            if(c.a == 255){
+                drag += -p.vx;
+            }
+
+        }
+    }
+       
+    return drag;
 }
