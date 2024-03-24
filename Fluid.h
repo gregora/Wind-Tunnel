@@ -67,7 +67,7 @@ class Fluid {
 
         void physics(float delta);
 
-        virtual void set_boundaries(Particle* particles, uint width, uint height, uint identifier) = 0;
+        virtual void set_boundaries(Particle* particles, uint width, uint height, uint identifier);
 
         float energy();
 
