@@ -29,6 +29,8 @@ int main(int args, char** argv){
     bool render_velocities = false;
     bool render_pressure = false;
 
+    bool auto_delta = false;
+
     for(int i = 0; i < args; i++){
         if(strcmp(argv[i], "-render") == 0){
             render = true;
@@ -58,14 +60,37 @@ int main(int args, char** argv){
             object = std::string(argv[i + 1]);
         }
 
+        if(strcmp(argv[i], "-auto") == 0){
+            auto_delta = true;
+        }
+
+        if(strcmp(argv[i], "-delta") == 0){
+            delta = atof(argv[i + 1]);
+        }
+
     }
 
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20, 50);
 
+    if (auto_delta && render){
+            printf("ERROR: Rendering with auto delta is not possible!\n");
+            return 1;
+    }
+
+    if (!auto_delta){
+        t.show_warnings = true;
+    }
+    
+
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Fluid Simulation");
 
-    int frames = (int) (simulation_time / delta);
-    for(int frame = 0; frame < frames; frame++){        
+    int frame = 0;
+    float time_elapsed = 0;
+    while (time_elapsed < simulation_time){
+
+        if(auto_delta){
+            delta = t.max_delta()*0.01;
+        }
 
         auto start = std::chrono::high_resolution_clock::now();
         t.physics(delta);
@@ -79,6 +104,9 @@ int main(int args, char** argv){
 
         std::cout << "Lift: " << t.calculate_lift() << std::endl;
         std::cout << "Drag: " << t.calculate_drag() << std::endl;
+        if(auto_delta){
+            std::cout << "Delta: " << delta << std::endl;
+        }
 
 
         if(render){
@@ -87,6 +115,8 @@ int main(int args, char** argv){
             screenshot.saveToFile("render/" + std::to_string(frame) + ".png");
             printf("Rendered frame %d at simulation time %fs\n", frame, frame*delta);
         }
+    
+        frame += 1;
     }
 
     if(render){

@@ -18,3 +18,4 @@ Run `./main.out` in the root directory. The program supports the following comma
 * `-pressure` - wheter to render pressure or not. If pressure is not rendered, smoke is
 * `-threads <threads>` - number of CPU threads to use
 * `-render` - renders the system to a video file in the `render` directory as `output.mp4`
+* `-auto` - automatically sets simulation delta as calculated via `max_delta()` function
