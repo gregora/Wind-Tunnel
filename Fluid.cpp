@@ -55,6 +55,34 @@ void Fluid::diffuse_iteration(Particle* newParticles, float delta, float viscosi
 
 void Fluid::advect_iteration(Particle* newParticles, float delta, uint i, uint j){
 
+    // LAX METHOD FOR SOLVING ADVECTION EQUATION
+    // this method is so far unstable
+
+    /*
+    Particle& p0 = particles[coords2index(i, j, width)];
+
+    float vx = p0.vx;
+    float vy = p0.vy;
+
+
+    Particle& p1 = particles[coords2index(i + 1, j, width)];
+    Particle& p2 = particles[coords2index(i - 1, j, width)];
+
+    Particle& p3 = particles[coords2index(i, j + 1, width)];
+    Particle& p4 = particles[coords2index(i, j - 1, width)];
+
+
+    Particle& p = newParticles[coords2index(i, j, width)];
+
+    p.vx = p0.vx - p.vx * delta / dx * (p0.vx - p2.vx) - p.vy * delta / dx * (p0.vx - p4.vx);
+    p.vy = p0.vy - p.vx * delta / dx * (p0.vy - p2.vy) - p.vy * delta / dx * (p0.vy - p4.vy);
+
+    p.smoke = p0.smoke - p.vx * delta / dx * (p0.smoke - p2.smoke) - p.vy * delta / dx * (p0.smoke - p4.smoke);
+    */
+
+
+    // SEMI-LAGRANGIAN METHOD FOR SOLVING ADVECTION EQUATION
+    
     Particle& p0 = particles[coords2index(i, j, width)];
 
     float vx = p0.vx;
@@ -101,6 +129,7 @@ void Fluid::advect_iteration(Particle* newParticles, float delta, uint i, uint j
     p.vy = k2 * (k4 * p1.vy + k3 * p3.vy) + k1 * (k4 * p2.vy + k3 * p4.vy);
 
     p.smoke = k2 * (k4 * p1.smoke + k3 * p3.smoke) + k1 * (k4 * p2.smoke + k3 * p4.smoke);
+
 
 }
 
@@ -221,6 +250,74 @@ float Fluid::energy(){
 }
 
 
+
+void Fluid::set_boundaries(Particle* particles, uint width, uint height, uint identifier){
+
+    /*
+    IDENTIFIERS:
+    1 - velocity x
+    2 - velocity y
+    3 - divergence
+    4 - pressure
+    5 - smoke
+    */
+
+    //top and bottom
+    for(uint i = 1; i < width - 1; i++){
+
+        if(identifier == 1){
+            //particles[coords2index(i, 0, width)].vx = particles[coords2index(i, 1, width)].vx;
+            //particles[coords2index(i, height - 1, width)].vx = particles[coords2index(i, height - 2, width)].vx;
+            particles[coords2index(i, 0, width)].vx = 0;
+            particles[coords2index(i, height - 1, width)].vx = 0;
+        }
+
+        if(identifier == 2){
+            particles[coords2index(i, 0, width)].vy = -particles[coords2index(i, 1, width)].vy;
+            particles[coords2index(i, height - 1, width)].vy = -particles[coords2index(i, height - 2, width)].vy;
+        }
+
+        if(identifier == 3){
+            particles[coords2index(i, 0, width)].div = particles[coords2index(i, 1, width)].div;
+            particles[coords2index(i, height - 1, width)].div = particles[coords2index(i, height - 2, width)].div;
+        }
+
+        if(identifier == 4){
+            particles[coords2index(i, 0, width)].p = particles[coords2index(i, 1, width)].p;
+            particles[coords2index(i, height - 1, width)].p = particles[coords2index(i, height - 2, width)].p;        
+        }
+    }
+
+    //left and right
+    for(uint j = 1; j < height - 1; j++){
+
+        if(identifier == 1){
+            particles[coords2index(0, j, width)].vx = -particles[coords2index(1, j, width)].vx;
+            particles[coords2index(width - 1, j, width)].vx = -particles[coords2index(width - 2, j, width)].vx;
+        }
+
+        if(identifier == 2){
+            //particles[coords2index(0, j, width)].vy = particles[coords2index(1, j, width)].vy;
+            //particles[coords2index(width - 1, j, width)].vy = particles[coords2index(width - 2, j, width)].vy;
+            particles[coords2index(0, j, width)].vy = 0;
+            particles[coords2index(width - 1, j, width)].vy = 0;
+        }
+
+        if(identifier == 3){
+            particles[coords2index(0, j, width)].div = particles[coords2index(1, j, width)].div;
+            particles[coords2index(width - 1, j, width)].div = particles[coords2index(width - 2, j, width)].div;
+        }
+
+        if(identifier == 4){
+            particles[coords2index(0, j, width)].p = particles[coords2index(1, j, width)].p;
+            particles[coords2index(width - 1, j, width)].p = particles[coords2index(width - 2, j, width)].p;
+        }
+    }
+
+
+}
+
+
 void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_energy, bool render_velocities, bool render_pressure){
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
@@ -305,73 +402,6 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
 }
 
 
-void Fluid::set_boundaries(Particle* particles, uint width, uint height, uint identifier){
-
-    /*
-    IDENTIFIERS:
-    1 - velocity x
-    2 - velocity y
-    3 - divergence
-    4 - pressure
-    5 - smoke
-    */
-
-    //top and bottom
-    for(uint i = 1; i < width - 1; i++){
-
-        if(identifier == 1){
-            //particles[coords2index(i, 0, width)].vx = particles[coords2index(i, 1, width)].vx;
-            //particles[coords2index(i, height - 1, width)].vx = particles[coords2index(i, height - 2, width)].vx;
-            particles[coords2index(i, 0, width)].vx = 0;
-            particles[coords2index(i, height - 1, width)].vx = 0;
-        }
-
-        if(identifier == 2){
-            particles[coords2index(i, 0, width)].vy = -particles[coords2index(i, 1, width)].vy;
-            particles[coords2index(i, height - 1, width)].vy = -particles[coords2index(i, height - 2, width)].vy;
-        }
-
-        if(identifier == 3){
-            particles[coords2index(i, 0, width)].div = particles[coords2index(i, 1, width)].div;
-            particles[coords2index(i, height - 1, width)].div = particles[coords2index(i, height - 2, width)].div;
-        }
-
-        if(identifier == 4){
-            particles[coords2index(i, 0, width)].p = particles[coords2index(i, 1, width)].p;
-            particles[coords2index(i, height - 1, width)].p = particles[coords2index(i, height - 2, width)].p;        
-        }
-    }
-
-    //left and right
-    for(uint j = 1; j < height - 1; j++){
-
-        if(identifier == 1){
-            particles[coords2index(0, j, width)].vx = -particles[coords2index(1, j, width)].vx;
-            particles[coords2index(width - 1, j, width)].vx = -particles[coords2index(width - 2, j, width)].vx;
-        }
-
-        if(identifier == 2){
-            //particles[coords2index(0, j, width)].vy = particles[coords2index(1, j, width)].vy;
-            //particles[coords2index(width - 1, j, width)].vy = particles[coords2index(width - 2, j, width)].vy;
-            particles[coords2index(0, j, width)].vy = 0;
-            particles[coords2index(width - 1, j, width)].vy = 0;
-        }
-
-        if(identifier == 3){
-            particles[coords2index(0, j, width)].div = particles[coords2index(1, j, width)].div;
-            particles[coords2index(width - 1, j, width)].div = particles[coords2index(width - 2, j, width)].div;
-        }
-
-        if(identifier == 4){
-            particles[coords2index(0, j, width)].p = particles[coords2index(1, j, width)].p;
-            particles[coords2index(width - 1, j, width)].p = particles[coords2index(width - 2, j, width)].p;
-        }
-    }
-
-
-}
-
-
 
 
 void Fluid::diffuse_sector(Particle* newParticles, float delta, float viscosity, uint start, uint end){
@@ -434,6 +464,16 @@ void Fluid::advect_sector(Particle* newParticles, float delta, uint start, uint 
 void Fluid::advect(float delta){
     Particle* newParticles = new Particle[width * height];
 
+
+    if(show_warnings){
+        float max_dt = max_delta();
+        if(max_dt < delta){
+            printf("WARNING: Advection is unstable!\n");
+            printf("         delta = %f, delta_max = %f\n", delta, max_dt);
+
+        }
+    }
+
     std::thread threads_array[threads];
 
     for(uint t = 0; t < threads; t++){
@@ -452,6 +492,27 @@ void Fluid::advect(float delta){
     delete particles;
     particles = newParticles;
 
+}
+
+float Fluid::max_delta(){
+    float max_vel = max_velocity();
+    
+    return dx / max_vel;
+}
+
+float Fluid::max_velocity(){
+    float max = 0;
+    for(uint i = 1; i < width - 1; i++){
+        for(uint j = 1; j < height - 1; j++){
+            Particle& p = particles[coords2index(i, j, width)];
+            float vel = sqrt(p.vx*p.vx + p.vy*p.vy);
+            if(vel > max){
+                max = vel;
+            }
+        }
+    }
+
+    return max;
 }
 
 void Fluid::pressure_sector(float delta, uint start, uint end){
