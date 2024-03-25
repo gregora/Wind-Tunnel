@@ -89,7 +89,7 @@ int main(int args, char** argv){
     while (time_elapsed < simulation_time){
 
         if(auto_delta){
-            delta = t.max_delta()*0.01;
+            delta = t.max_delta()*0.1;
         }
 
         auto start = std::chrono::high_resolution_clock::now();

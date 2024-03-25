@@ -18,9 +18,11 @@ Fluid::Fluid(uint width, uint height, float dx){
     this->dx = dx;
 
     particles = new Particle[width * height];
+    newParticles = new Particle[width * height];
 }
 
 Fluid::~Fluid(){
+    delete newParticles;
     delete particles;
 }
 
@@ -33,19 +35,12 @@ void Fluid::diffuse_iteration(Particle* newParticles, float delta, float viscosi
     Particle& p3 = newParticles[coords2index(i, j + 1, width)];
     Particle& p4 = newParticles[coords2index(i, j - 1, width)];
 
-    float vx = p.vx;
-    float vy = p.vy;
-
-    float smoke = p0.smoke;
-
     float a = (delta * viscosity) / (dx * dx);
-    vx = (p0.vx + a * (p1.vx + p2.vx + p3.vx + p4.vx)) / (1 + 4 * a);
-    vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / (1 + 4 * a);
-    smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / (1 + 4 * a);
+    float a_inv = 1 + 4 * a;
 
-    p.vx = vx;
-    p.vy = vy;
-    p.smoke = smoke;
+    p.vx = (p0.vx + a * (p1.vx + p2.vx + p3.vx + p4.vx)) / a_inv;
+    p.vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / a_inv;
+    p.smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / a_inv;
 
     p.Fx = p0.Fx;
     p.Fy = p0.Fy;
@@ -173,9 +168,7 @@ void Fluid::incompressibility(float delta){
             Particle& p3 = particles[coords2index(i, j + 1, width)];
             Particle& p4 = particles[coords2index(i, j - 1, width)];
 
-            float div = (p1.vx - p2.vx + p3.vy - p4.vy) / (2 * dx);
-
-            p.div = div;
+            p.div = (p1.vx - p2.vx + p3.vy - p4.vy) / (2 * dx);
             p.p = 0;
 
         }
@@ -227,14 +220,33 @@ void Fluid::physics(float delta){
     auto start = std::chrono::high_resolution_clock::now();
 
     external_forces(delta);
+    auto external_forces_time = std::chrono::high_resolution_clock::now();
+
     advect(delta);
+    auto advect_time = std::chrono::high_resolution_clock::now();
+
     diffuse(delta);
+    auto diffuse_time = std::chrono::high_resolution_clock::now();
+
     incompressibility(delta);
+    auto incompressibility_time = std::chrono::high_resolution_clock::now();
+    
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = end - start;
+    if (debug_performance){
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+        std::chrono::duration<double> elapsed_external_forces = external_forces_time - start;
+        std::chrono::duration<double> elapsed_advect = advect_time - external_forces_time;
+        std::chrono::duration<double> elapsed_diffuse = diffuse_time - advect_time;
+        std::chrono::duration<double> elapsed_incompressibility = incompressibility_time - diffuse_time;
 
-    //printf("Physics time: %f\n", elapsed.count());
+        printf("Physics time: %fs:\n", elapsed.count());    
+        printf("    - External forces time: %fs (%f%)\n", elapsed_external_forces.count(), elapsed_external_forces.count() / elapsed.count() * 100);
+        printf("    - Advection time: %fs (%f%)\n", elapsed_advect.count(), elapsed_advect.count() / elapsed.count() * 100);
+        printf("    - Diffusion time: %fs (%f%)\n", elapsed_diffuse.count(), elapsed_diffuse.count() / elapsed.count() * 100);
+        printf("    - Incompressibility time: %fs (%f%)\n", elapsed_incompressibility.count(), elapsed_incompressibility.count() / elapsed.count() * 100);
+    }
+    
 }
 
 float Fluid::energy(){
@@ -320,9 +332,12 @@ void Fluid::set_boundaries(Particle* particles, uint width, uint height, uint id
 
 void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_energy, bool render_velocities, bool render_pressure){
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
     Arrow arrow;
-
+    sf::Color c(255, 255, 255);
+    
     for(int i = 0; i < width; i++){
         for(int j = 0; j < height; j++){
             Particle& p = particles[coords2index(i, j, width)];
@@ -351,28 +366,29 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
                 p_color = 0;
             }
             
-            sf::Color c(255, 255, 255);
             c.a = p_color;
             rect.setPosition(i * block_size, j * block_size);
             rect.setFillColor(c);
             target.draw(rect);
 
-            float ang = atan2(p.vy, p.vx);
 
-            arrow.setPosition(i * block_size + block_size/2, j * block_size + block_size/2);
-            ang = 90 + ang * 180 / M_PI;
-            arrow.setRotation(ang);
-            if(render_velocities){
+            if (render_velocities){
+            
+                float ang = atan2(p.vy, p.vx);
+                ang = 90 + ang * 180 / M_PI;
+
+                arrow.setPosition(i * block_size + block_size/2, j * block_size + block_size/2);
+                arrow.setRotation(ang);
                 arrow.setOpacity(speed);
-            }else{
-                arrow.setOpacity(0);
-            }
-            if(speed > 100){
-                speed = 100;
-            }
-            arrow.setScale(block_size * speed / 2000, block_size * speed / 2000);
 
-            target.draw(arrow);
+                if(speed > 100){
+                    speed = 100;
+                }
+
+                arrow.setScale(block_size * speed / 2000, block_size * speed / 2000);
+
+                target.draw(arrow);
+            }
 
         }
     }
@@ -399,6 +415,13 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
         target.draw(text);
     }
 
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    if (debug_performance){
+        printf("Drawing time: %fs\n", elapsed.count());
+    }
+
 }
 
 
@@ -421,7 +444,6 @@ void Fluid::diffuse_sector(Particle* newParticles, float delta, float viscosity,
 
 
 void Fluid::diffuse(float delta, float viscosity){
-    Particle* newParticles = new Particle[width * height];
 
     std::thread threads_array[threads];
     for(uint k = 0; k < gs_iters; k++){       
@@ -437,12 +459,11 @@ void Fluid::diffuse(float delta, float viscosity){
         set_boundaries(newParticles, width, height, 2);
         set_boundaries(newParticles, width, height, 5);
 
-
     }
 
-    delete particles;
+    Particle* oldParticles = particles;
     particles = newParticles;
-
+    newParticles = oldParticles;
 }
 
 
@@ -462,8 +483,6 @@ void Fluid::advect_sector(Particle* newParticles, float delta, uint start, uint 
 }
 
 void Fluid::advect(float delta){
-    Particle* newParticles = new Particle[width * height];
-
 
     if(show_warnings){
         float max_dt = max_delta();
@@ -488,9 +507,10 @@ void Fluid::advect(float delta){
     set_boundaries(newParticles, width, height, 2);
     set_boundaries(newParticles, width, height, 5);
 
-
-    delete particles;
+    Particle* oldParticles = particles;
     particles = newParticles;
+    newParticles = oldParticles;
+
 
 }
 
