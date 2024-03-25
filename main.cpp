@@ -24,6 +24,8 @@ int main(int args, char** argv){
     uint threads = 1;
     std::string object = "wing";
 
+    int subcomputatoins = 1;
+
     bool render = false;
     bool render_energy = false;
     bool render_velocities = false;
@@ -68,6 +70,10 @@ int main(int args, char** argv){
             delta = atof(argv[i + 1]);
         }
 
+        if(strcmp(argv[i], "-subcomputations") == 0){
+            subcomputatoins = atof(argv[i + 1]);
+        }
+
     }
 
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20, 50);
@@ -96,11 +102,6 @@ int main(int args, char** argv){
         t.physics(delta);
         auto end = std::chrono::high_resolution_clock::now();
 
-        window.clear();
-        t.draw_object(window, block_size);
-        t.drawParticles(window, block_size, render_energy, render_velocities, render_pressure);
-        
-        window.display();
 
         std::cout << "Lift: " << t.calculate_lift() << std::endl;
         std::cout << "Drag: " << t.calculate_drag() << std::endl;
@@ -108,12 +109,21 @@ int main(int args, char** argv){
             std::cout << "Delta: " << delta << std::endl;
         }
 
-
-        if(render){
-            sf::Image screenshot = window.capture();
+        if(frame % subcomputatoins == 0){
+            window.clear();
+            t.draw_object(window, block_size);
+            t.drawParticles(window, block_size, render_energy, render_velocities, render_pressure);
             
-            screenshot.saveToFile("render/" + std::to_string(frame) + ".png");
-            printf("Rendered frame %d at simulation time %fs\n", frame, frame*delta);
+            window.display();
+
+
+            if(render){
+                sf::Image screenshot = window.capture();
+                
+                screenshot.saveToFile("render/" + std::to_string(frame) + ".png");
+                printf("Rendered frame %d at simulation time %fs\n", frame, frame*delta);
+            }
+
         }
     
         frame += 1;
@@ -121,7 +131,7 @@ int main(int args, char** argv){
 
     if(render){
 		printf("Rendering ...\n");
-		system(std::string(("ffmpeg -y -framerate ") + std::to_string((int) (1 / delta)) + std::string(" -i render/%d.png render/output.mp4 > /dev/null")).c_str());
+		system(std::string(("ffmpeg -y -framerate ") + std::to_string((int) (1 / delta / subcomputatoins)) + std::string(" -i render/%d.png render/output.mp4 > /dev/null")).c_str());
 		printf("Deleting pngs ...\n");
 		system("rm -r render/*.png");
 		printf("Done.\n");
