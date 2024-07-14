@@ -1,5 +1,5 @@
 # Wind Tunnel
-A wind tunnel simulation using Navier-Stokes equations.
+A wind tunnel simulation using Navier-Stokes equations. Project is built on top of my [Navier-Stokes library](https://github.com/gregora/Navier-Stokes).
 
 ## Usage
 
