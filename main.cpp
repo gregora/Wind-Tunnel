@@ -11,8 +11,8 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 240;
-    float HEIGHT = 200;
+    float WIDTH = 960;
+    float HEIGHT = 800;
 
     float WINDOW_WIDTH = 1200;
     float WINDOW_HEIGHT = 1000;
@@ -20,7 +20,7 @@ int main(int args, char** argv){
     uint block_size = (uint) (WINDOW_WIDTH / WIDTH);
 
     float simulation_time = 20;
-    float delta = 0.004;
+    float delta = 0.001;
     uint threads = 1;
     std::string object = "wing";
 
@@ -78,6 +78,7 @@ int main(int args, char** argv){
 
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20, 50);
     t.debug_performance = true;
+    t.threads = threads;
     if (auto_delta && render){
             printf("ERROR: Rendering with auto delta is not possible!\n");
             return 1;

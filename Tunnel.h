@@ -2,6 +2,7 @@
 #define TUNNEL_H 1
 
 #include "Fluid.h"
+#include <thread>
 
 
 class Tunnel : public Fluid {
@@ -16,6 +17,7 @@ class Tunnel : public Fluid {
 
         void draw_object(sf::RenderWindow& window, uint block_size = 20);
 
+        void set_boundaries_sector(Particle* particles, uint start, uint end, uint identifier);
         void set_boundaries(Particle* particles, uint width, uint height, uint identifier);
 
         float calculate_lift();
