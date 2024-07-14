@@ -1,2 +1,14 @@
-main.out: main.cpp Arrow.cpp Arrow.h Fluid.cpp Fluid.h misc.cpp misc.h Tunnel.h Tunnel.cpp
-	g++ main.cpp Arrow.cpp Fluid.cpp misc.cpp Tunnel.cpp -o main.out -lsfml-graphics -lsfml-window -lsfml-system -pthread -std=c++11
+main.out: main.cpp Arrow.o Fluid.o Tunnel.o misc.o
+	g++ main.cpp Arrow.o Fluid.o Tunnel.o misc.o -o main.out -lsfml-graphics -lsfml-window -lsfml-system -pthread -std=c++11
+
+Arrow.o: Arrow.cpp Arrow.h
+	g++ -c Arrow.cpp -lsfml-graphics -lsfml-window -lsfml-system -std=c++11
+
+Fluid.o: Fluid.cpp Fluid.h
+	g++ -c Fluid.cpp -lsfml-graphics -lsfml-window -lsfml-system -std=c++11
+
+Tunnel.o: Tunnel.cpp Tunnel.h
+	g++ -c Tunnel.cpp -lsfml-graphics -lsfml-window -lsfml-system -std=c++11
+
+misc.o: misc.cpp misc.h
+	g++ -c misc.cpp
