@@ -94,6 +94,13 @@ int main(int args, char** argv){
     float time_elapsed = 0;
     while (time_elapsed < simulation_time){
 
+        sf::Event event;
+        while (window.pollEvent(event)){
+            if (event.type == sf::Event::Closed){
+                window.close();
+            }
+        }
+
         if(auto_delta){
             delta = t.max_delta()*0.1;
         }
