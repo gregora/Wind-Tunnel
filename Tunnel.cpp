@@ -146,9 +146,6 @@ void Tunnel::set_boundaries_sector(Particle* particles, uint start, uint end, ui
 
 void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint identifier){  
 
-    //external forces (force of gravity)
-
-
     //top and bottom
     for(uint i = 0; i < width; i++){
         if(identifier == 1){
@@ -225,94 +222,8 @@ void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint i
     for(uint t = 0; t < threads; t++){
         threads_array[t].join();
     }
-
-
-
-    /*
-    for(uint i = 1; i < width - 1; i++){
-        for(uint j = 1; j < height - 1; j++){
-            particles[coords2index(i, j, width)].Fy = 10;
-
-            Particle& p = particles[coords2index(i, j, width)];
-            const sf::Color& c = object.getPixel(i, j);         
-
-            if(c.a == 255){
-                if(identifier == 1)
-                    p.vx = 0;
-                if(identifier == 2)
-                    p.vy = 0;
-                if(identifier == 3)
-                    p.div = 0;
-                if(identifier == 4)
-                    p.p = 0;
-                if(identifier == 5)
-                    p.smoke = 0;
-
-                uint count = 0;
-
-                int neighbours[][2] = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
-
-                for(int k = 0; k < 8; k++){
-
-                    float sx = neighbours[k][0];
-                    float sy = neighbours[k][1];
-
-                    const sf::Color& c1 = object.getPixel(i + sx, j + sy);
-                    Particle& n = particles[coords2index(i + sx, j + sy, width)];
-
-
-                    if(c1.a != 255){
-
-                        count ++;
-
-                        float len_sqr = sx*sx + sy*sy;
-
-                        float vx = ((n.vx*sx + n.vy*sy) / len_sqr) * sx;
-                        float vy = ((n.vx*sx + n.vy*sy) / len_sqr) * (+sy);
-
-                        if(identifier == 1)
-                            p.vx += -vx;
-                        
-                        if(identifier == 2)
-                            p.vy += -vy;
-
-                        if(identifier == 3)
-                            p.div += n.div;
-
-                        if(identifier == 4)
-                            p.p += n.p;
-
-                        if(identifier == 5)
-                            p.smoke += n.smoke;
-                    }
-                
-                }
-                
-
-                if(count > 0){
-                    if(identifier == 1)
-                        p.vx = p.vx;
-                    
-                    if(identifier == 2)
-                        p.vy = p.vy;
-
-                    if(identifier == 3)
-                        p.div = p.div / count;
-                    
-                    if(identifier == 4)
-                        p.p = p.p / count;
-
-                    if(identifier == 5)
-                        p.smoke = p.smoke / count;
-                }
-           }
-            
-        }
-
-    }
-    */
-
 }
+
 
 float Tunnel::calculate_lift(){
     float lift = 0;
