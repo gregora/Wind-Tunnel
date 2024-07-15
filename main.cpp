@@ -111,11 +111,6 @@ int main(int args, char** argv){
         auto end = std::chrono::high_resolution_clock::now();
 
 
-        std::cout << "Lift: " << t.calculate_lift() << std::endl;
-        std::cout << "Drag: " << t.calculate_drag() << std::endl;
-        if(auto_delta){
-            std::cout << "Delta: " << delta << std::endl;
-        }
 
         if(frame % subcomputatoins == 0){
             window.clear();
@@ -133,7 +128,15 @@ int main(int args, char** argv){
             }
 
         }
-    
+
+        std::cout << std::endl;
+        std::cout << "Lift: " << t.calculate_lift() << std::endl;
+        std::cout << "Drag: " << t.calculate_drag() << std::endl;
+        
+        if(auto_delta){
+            std::cout << "Delta: " << delta << std::endl;
+        }
+
         frame += 1;
     }
 
