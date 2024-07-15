@@ -335,9 +335,7 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
-    Arrow arrow;
-    sf::Color c(255, 255, 255);
+    sf::Uint8 pixels[width * height * 4];
     
     for(int i = 0; i < width; i++){
         for(int j = 0; j < height; j++){
@@ -365,16 +363,41 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
             if (p_color < 0)
             {
                 p_color = 0;
-            }
-            
-            c.a = p_color;
-            rect.setPosition(i * block_size, j * block_size);
-            rect.setFillColor(c);
-            target.draw(rect);
+            } 
+
+            pixels[4 * (j * width + i) + 0] = 255;
+            pixels[4 * (j * width + i) + 1] = 255;
+            pixels[4 * (j * width + i) + 2] = 255;
+            pixels[4 * (j * width + i) + 3] = p_color;
+        }
+    }
+
+    sf::Texture texture;
+    texture.create(width, height);
+    texture.update(pixels, width, height, 0, 0);
+
+    sf::Sprite sprite(texture);
+    sprite.setScale(block_size, block_size);
+    target.draw(sprite);
+
+    if(render_velocities){
+
+        Arrow arrow;
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                Particle& p = particles[coords2index(i, j, width)];
+
+                float speed = 70*sqrt(p.vx * p.vx + p.vy * p.vy);
+
+                if(speed <= 0){
+                    continue;
+                }
+
+                if(speed > 255){
+                    speed = 255;
+                }
 
 
-            if (render_velocities){
-            
                 float ang = atan2(p.vy, p.vx);
                 ang = 90 + ang * 180 / M_PI;
 
@@ -389,8 +412,8 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
                 arrow.setScale(block_size * speed / 2000, block_size * speed / 2000);
 
                 target.draw(arrow);
-            }
 
+            }
         }
     }
 
@@ -424,7 +447,6 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
     }
 
 }
-
 
 
 
