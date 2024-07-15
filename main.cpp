@@ -110,8 +110,6 @@ int main(int args, char** argv){
         t.physics(delta);
         auto end = std::chrono::high_resolution_clock::now();
 
-
-
         if(frame % subcomputatoins == 0){
             window.clear();
             t.draw_object(window, block_size);
@@ -132,7 +130,7 @@ int main(int args, char** argv){
         std::cout << std::endl;
         std::cout << "Lift: " << t.calculate_lift() << std::endl;
         std::cout << "Drag: " << t.calculate_drag() << std::endl;
-        
+
         if(auto_delta){
             std::cout << "Delta: " << delta << std::endl;
         }
