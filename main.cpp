@@ -7,12 +7,13 @@
 #include <chrono>
 #include "misc.h"
 #include "Tunnel.h"
-
+#include <fstream>
+#include <iostream>
 
 int main(int args, char** argv){
 
-    float WIDTH = 960;
-    float HEIGHT = 800;
+    float WIDTH = 120;
+    float HEIGHT = 100;
 
     float WINDOW_WIDTH = 1200;
     float WINDOW_HEIGHT = 1000;
@@ -22,7 +23,7 @@ int main(int args, char** argv){
     float simulation_time = 20;
     float delta = 0.001;
     uint threads = 1;
-    std::string object = "wing";
+    std::string object = "sphere";
 
     int subcomputatoins = 1;
 
@@ -32,6 +33,9 @@ int main(int args, char** argv){
     bool render_pressure = false;
 
     bool auto_delta = false;
+
+    std::string save_data = "";
+    std::fstream save_file;
 
     for(int i = 0; i < args; i++){
         if(strcmp(argv[i], "-render") == 0){
@@ -72,6 +76,11 @@ int main(int args, char** argv){
 
         if(strcmp(argv[i], "-subcomputations") == 0){
             subcomputatoins = atof(argv[i + 1]);
+        }
+
+        if(strcmp(argv[i], "-save") == 0){
+            save_data = std::string(argv[i + 1]);
+            save_file.open(save_data, std::ios::out | std::ios::trunc);
         }
 
     }
@@ -137,7 +146,14 @@ int main(int args, char** argv){
 
         std::cout << std::endl;
 
+
+        if(save_data != ""){
+
+            save_file << time_elapsed << "," << t.calculate_lift() << "," << t.calculate_drag() << std::endl;
+        }
+
         frame += 1;
+        time_elapsed += delta;
         //return 0;
     }
 
