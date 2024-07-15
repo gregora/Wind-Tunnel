@@ -1,6 +1,12 @@
 # Wind Tunnel
 A wind tunnel simulation using Navier-Stokes equations. Project is built on top of my [Navier-Stokes library](https://github.com/gregora/Navier-Stokes).
 
+## Showcase
+
+### Spherical object
+
+![Spherical object](render/sphere.png)
+
 ## Usage
 
 ### Dependencies
