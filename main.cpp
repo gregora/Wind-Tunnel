@@ -98,7 +98,11 @@ int main(int args, char** argv){
     }
     
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Fluid Simulation");
+    sf::Image icon;
+    icon.loadFromFile("icon.png");
+
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Wind Tunnel Simulation");
+    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
     int frame = 0;
     float time_elapsed = 0;

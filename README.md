@@ -3,9 +3,19 @@ A wind tunnel simulation using Navier-Stokes equations. Project is built on top 
 
 ## Showcase
 
-### Spherical object
+### Sphere
 
 ![Spherical object](render/sphere.png)
+
+A simulation of a sphere put in a wind tunnel. Above you can see a screenshot of the simulation and below the resulting graph of lift and drag.
+
+![Graph](data/figure_sphere.png)
+
+The oscilating values for both lift and drag are a result of vortices behind the sphere.
+
+The oscilations seem to have a frequency of 1.25Hz, however I did not investigate this further.
+
+Raw data for this experiment is available in `data/sphere.csv`.
 
 ## Usage
 
