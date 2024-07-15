@@ -135,6 +135,8 @@ int main(int args, char** argv){
             std::cout << "Delta: " << delta << std::endl;
         }
 
+        std::cout << std::endl;
+
         frame += 1;
     }
 

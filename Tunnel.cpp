@@ -7,6 +7,7 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
 
     this -> speed = speed;
 
+    sf::Image object;
     object.loadFromFile(object_file);
 
     float scalex = (float) width / object.getSize().x;
@@ -15,17 +16,19 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
     sf::Image scaled_object;
     scaled_object.create(width, height);
 
+    object_mask = new uint8_t[width * height];
+
     for(uint i = 0; i < width; i++){
         for(uint j = 0; j < height; j++){
             scaled_object.setPixel(i, j, object.getPixel(i / scalex, j / scaley));
+            object_mask[coords2index(i, j, width)] = scaled_object.getPixel(i, j).a;        
         }
     }
-
-    object = scaled_object;
 
 }
 
 Tunnel::~Tunnel(){
+    delete object_mask;
 }
 
 
@@ -41,7 +44,7 @@ void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
         for(uint j = 0; j < height; j++){
 
             rect.setPosition(i * block_size, j * block_size);
-            c.a = object.getPixel(i, j).a;
+            c.a = object_mask[coords2index(i, j, width)];
             rect.setFillColor(c);
             window.draw(rect);
         }
@@ -63,9 +66,9 @@ void Tunnel::set_boundaries_sector(Particle* particles, uint start, uint end, ui
             particles[coords2index(i, j, width)].Fy = 10;
 
             Particle& p = particles[coords2index(i, j, width)];
-            const sf::Color& c = object.getPixel(i, j);         
+            const uint8_t c = object_mask[coords2index(i, j, width)];         
 
-            if(c.a == 255){
+            if(c == 255){
                 if(identifier == 1)
                     p.vx = 0;
                 if(identifier == 2)
@@ -86,11 +89,11 @@ void Tunnel::set_boundaries_sector(Particle* particles, uint start, uint end, ui
                     float sx = neighbours[k][0];
                     float sy = neighbours[k][1];
 
-                    const sf::Color& c1 = object.getPixel(i + sx, j + sy);
+                    const uint8_t c1 = object_mask[coords2index(i + sx, j + sy, width)];
                     Particle& n = particles[coords2index(i + sx, j + sy, width)];
 
 
-                    if(c1.a != 255){
+                    if(c1 != 255){
 
                         count ++;
 
@@ -232,8 +235,8 @@ float Tunnel::calculate_lift(){
         for(uint j = 0; j < height; j++){
             Particle& p = particles[coords2index(i, j, width)];
 
-            const sf::Color& c = object.getPixel(i, j);
-            if(c.a == 255){
+            const uint8_t c = object_mask[coords2index(i, j, width)];
+            if(c == 255){
                 lift += p.vy;
             }
 
@@ -250,8 +253,8 @@ float Tunnel::calculate_drag(){
         for(uint j = 0; j < height; j++){
             Particle& p = particles[coords2index(i, j, width)];
 
-            const sf::Color& c = object.getPixel(i, j);
-            if(c.a == 255){
+            const uint8_t c = object_mask[coords2index(i, j, width)];
+            if(c == 255){
                 drag += -p.vx;
             }
 

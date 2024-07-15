@@ -3,14 +3,15 @@
 
 #include "Fluid.h"
 #include <thread>
-
+#include <cstdint>
 
 class Tunnel : public Fluid {
 
     public:
 
         float speed = 50;
-        sf::Image object;
+        
+        uint8_t* object_mask = NULL;
 
         Tunnel(std::string object_file, uint width, uint height, float dx = 1, uint threads = 1, uint gs_iters = 20, float speed = 50);
         ~Tunnel();
