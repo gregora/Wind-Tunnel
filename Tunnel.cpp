@@ -63,7 +63,7 @@ void Tunnel::set_boundaries_sector(Particle* particles, uint start, uint end, ui
         }
 
         for(uint j = 1; j < height - 1; j++){
-            particles[coords2index(i, j, width)].Fy = 10;
+            particles[coords2index(i, j, width)].Fy = 9.81;
 
             Particle& p = particles[coords2index(i, j, width)];
             const uint8_t c = object_mask[coords2index(i, j, width)];         

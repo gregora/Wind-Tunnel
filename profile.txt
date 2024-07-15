@@ -1,0 +1,326 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 44.80      0.91     0.91                             Fluid::diffuse_iteration(Particle*, float, float, unsigned int, unsigned int)
+ 24.01      1.39     0.48                             Fluid::pressure_iteration(float, unsigned int, unsigned int)
+ 15.35      1.70     0.31                             Tunnel::set_boundaries_sector(Particle*, unsigned int, unsigned int, unsigned int)
+  3.47      1.77     0.07                             Fluid::advect_iteration(Particle*, float, unsigned int, unsigned int)
+  2.48      1.82     0.05                             Fluid::incompressibility(float)
+  1.49      1.85     0.03                             Fluid::drawParticles(sf::RenderTarget&, int, bool, bool, bool)
+  1.49      1.88     0.03                             Fluid::diffuse_sector(Particle*, float, float, unsigned int, unsigned int)
+  1.49      1.91     0.03                             Fluid::pressure_sector(float, unsigned int, unsigned int)
+  1.49      1.94     0.03                             Particle::Particle()
+  1.24      1.97     0.03                             Fluid::external_forces(float)
+  0.99      1.99     0.02                             Tunnel::draw_object(sf::RenderWindow&, unsigned int)
+  0.50      2.00     0.01                             Fluid::max_velocity()
+  0.50      2.00     0.01                             Tunnel::calculate_drag()
+  0.50      2.02     0.01                             Tunnel::Tunnel(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, unsigned int, unsigned int, float, unsigned int, unsigned int, float)
+  0.25      2.02     0.01                             Fluid::~Fluid()
+  0.00      2.02     0.00        2     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_data() const
+  0.00      2.02     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      2.02     0.00        1     0.00     0.00  sf::ContextSettings::ContextSettings(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool)
+  0.00      2.02     0.00        1     0.00     0.00  sf::String::~String()
+  0.00      2.02     0.00        1     0.00     0.00  __gnu_cxx::new_allocator<unsigned int>::deallocate(unsigned int*, unsigned long)
+  0.00      2.02     0.00        1     0.00     0.00  __gnu_cxx::new_allocator<unsigned int>::~new_allocator()
+  0.00      2.02     0.00        1     0.00     0.00  __gnu_cxx::__alloc_traits<std::allocator<char>, char>::_S_select_on_copy(std::allocator<char> const&)
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_is_local() const
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_local_data() const
+  0.00      2.02     0.00        1     0.00     0.00  std::allocator<unsigned int>::~allocator()
+  0.00      2.02     0.00        1     0.00     0.00  std::char_traits<char>::length(char const*)
+  0.00      2.02     0.00        1     0.00     0.00  std::pointer_traits<unsigned int const*>::pointer_to(unsigned int const&)
+  0.00      2.02     0.00        1     0.00     0.00  std::allocator_traits<std::allocator<char> >::select_on_container_copy_construction(std::allocator<char> const&)
+  0.00      2.02     0.00        1     0.00     0.00  std::allocator_traits<std::allocator<unsigned int> >::deallocate(std::allocator<unsigned int>&, unsigned int*, unsigned long)
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long)
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_dispose()
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_Alloc_hider::~_Alloc_hider()
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_get_allocator()
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::~basic_string()
+  0.00      2.02     0.00        1     0.00     0.00  unsigned int const* std::__addressof<unsigned int const>(unsigned int const&)
+  0.00      2.02     0.00        1     0.00     0.00  std::remove_reference<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>::type&& std::move<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+  0.00      2.02     0.00        1     0.00     0.00  unsigned int const* std::addressof<unsigned int const>(unsigned int const&)
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*)
+  0.00      2.02     0.00        1     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.50% of 2.02 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     44.8    0.91    0.00                 Fluid::diffuse_iteration(Particle*, float, float, unsigned int, unsigned int) [1]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     24.0    0.48    0.00                 Fluid::pressure_iteration(float, unsigned int, unsigned int) [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]     15.3    0.31    0.00                 Tunnel::set_boundaries_sector(Particle*, unsigned int, unsigned int, unsigned int) [3]
+-----------------------------------------------
+                                                 <spontaneous>
+[4]      3.5    0.07    0.00                 Fluid::advect_iteration(Particle*, float, unsigned int, unsigned int) [4]
+-----------------------------------------------
+                                                 <spontaneous>
+[5]      2.5    0.05    0.00                 Fluid::incompressibility(float) [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[6]      1.5    0.03    0.00                 Fluid::drawParticles(sf::RenderTarget&, int, bool, bool, bool) [6]
+-----------------------------------------------
+                                                 <spontaneous>
+[7]      1.5    0.03    0.00                 Fluid::diffuse_sector(Particle*, float, float, unsigned int, unsigned int) [7]
+-----------------------------------------------
+                                                 <spontaneous>
+[8]      1.5    0.03    0.00                 Fluid::pressure_sector(float, unsigned int, unsigned int) [8]
+-----------------------------------------------
+                                                 <spontaneous>
+[9]      1.5    0.03    0.00                 Particle::Particle() [9]
+-----------------------------------------------
+                                                 <spontaneous>
+[10]     1.2    0.03    0.00                 Fluid::external_forces(float) [10]
+-----------------------------------------------
+                                                 <spontaneous>
+[11]     1.0    0.02    0.00                 Tunnel::draw_object(sf::RenderWindow&, unsigned int) [11]
+-----------------------------------------------
+                                                 <spontaneous>
+[12]     0.5    0.01    0.00                 Fluid::max_velocity() [12]
+-----------------------------------------------
+                                                 <spontaneous>
+[13]     0.5    0.01    0.00                 Tunnel::calculate_drag() [13]
+-----------------------------------------------
+                                                 <spontaneous>
+[14]     0.5    0.01    0.00                 Tunnel::Tunnel(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, unsigned int, unsigned int, float, unsigned int, unsigned int, float) [14]
+-----------------------------------------------
+                                                 <spontaneous>
+[15]     0.2    0.01    0.00                 Fluid::~Fluid() [15]
+-----------------------------------------------
+                0.00    0.00       1/2           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_is_local() const [30]
+                0.00    0.00       1/2           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long) [37]
+[23]     0.0    0.00    0.00       2         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_data() const [23]
+-----------------------------------------------
+                0.00    0.00       1/1           _GLOBAL__sub_I_main [50]
+[24]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [24]
+-----------------------------------------------
+                0.00    0.00       1/1           main [21]
+[25]     0.0    0.00    0.00       1         sf::ContextSettings::ContextSettings(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool) [25]
+-----------------------------------------------
+                0.00    0.00       1/1           main [21]
+[26]     0.0    0.00    0.00       1         sf::String::~String() [26]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::~basic_string() [41]
+-----------------------------------------------
+                0.00    0.00       1/1           std::allocator_traits<std::allocator<unsigned int> >::deallocate(std::allocator<unsigned int>&, unsigned int*, unsigned long) [36]
+[27]     0.0    0.00    0.00       1         __gnu_cxx::new_allocator<unsigned int>::deallocate(unsigned int*, unsigned long) [27]
+-----------------------------------------------
+                0.00    0.00       1/1           std::allocator<unsigned int>::~allocator() [32]
+[28]     0.0    0.00    0.00       1         __gnu_cxx::new_allocator<unsigned int>::~new_allocator() [28]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [46]
+[29]     0.0    0.00    0.00       1         __gnu_cxx::__alloc_traits<std::allocator<char>, char>::_S_select_on_copy(std::allocator<char> const&) [29]
+                0.00    0.00       1/1           std::allocator_traits<std::allocator<char> >::select_on_container_copy_construction(std::allocator<char> const&) [35]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_dispose() [38]
+[30]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_is_local() const [30]
+                0.00    0.00       1/2           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_data() const [23]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_local_data() const [31]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_is_local() const [30]
+[31]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_local_data() const [31]
+                0.00    0.00       1/1           std::pointer_traits<unsigned int const*>::pointer_to(unsigned int const&) [34]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_Alloc_hider::~_Alloc_hider() [39]
+[32]     0.0    0.00    0.00       1         std::allocator<unsigned int>::~allocator() [32]
+                0.00    0.00       1/1           __gnu_cxx::new_allocator<unsigned int>::~new_allocator() [28]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [46]
+[33]     0.0    0.00    0.00       1         std::char_traits<char>::length(char const*) [33]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_local_data() const [31]
+[34]     0.0    0.00    0.00       1         std::pointer_traits<unsigned int const*>::pointer_to(unsigned int const&) [34]
+                0.00    0.00       1/1           unsigned int const* std::addressof<unsigned int const>(unsigned int const&) [44]
+-----------------------------------------------
+                0.00    0.00       1/1           __gnu_cxx::__alloc_traits<std::allocator<char>, char>::_S_select_on_copy(std::allocator<char> const&) [29]
+[35]     0.0    0.00    0.00       1         std::allocator_traits<std::allocator<char> >::select_on_container_copy_construction(std::allocator<char> const&) [35]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long) [37]
+[36]     0.0    0.00    0.00       1         std::allocator_traits<std::allocator<unsigned int> >::deallocate(std::allocator<unsigned int>&, unsigned int*, unsigned long) [36]
+                0.00    0.00       1/1           __gnu_cxx::new_allocator<unsigned int>::deallocate(unsigned int*, unsigned long) [27]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_dispose() [38]
+[37]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long) [37]
+                0.00    0.00       1/2           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_data() const [23]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_get_allocator() [40]
+                0.00    0.00       1/1           std::allocator_traits<std::allocator<unsigned int> >::deallocate(std::allocator<unsigned int>&, unsigned int*, unsigned long) [36]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::~basic_string() [41]
+[38]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_dispose() [38]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_is_local() const [30]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long) [37]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::~basic_string() [41]
+[39]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_Alloc_hider::~_Alloc_hider() [39]
+                0.00    0.00       1/1           std::allocator<unsigned int>::~allocator() [32]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long) [37]
+[40]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_get_allocator() [40]
+-----------------------------------------------
+                0.00    0.00       1/1           sf::String::~String() [26]
+[41]     0.0    0.00    0.00       1         std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::~basic_string() [41]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_Alloc_hider::~_Alloc_hider() [39]
+                0.00    0.00       1/1           std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_dispose() [38]
+-----------------------------------------------
+                0.00    0.00       1/1           unsigned int const* std::addressof<unsigned int const>(unsigned int const&) [44]
+[42]     0.0    0.00    0.00       1         unsigned int const* std::__addressof<unsigned int const>(unsigned int const&) [42]
+-----------------------------------------------
+                0.00    0.00       1/1           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*) [45]
+[43]     0.0    0.00    0.00       1         std::remove_reference<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>::type&& std::move<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [43]
+-----------------------------------------------
+                0.00    0.00       1/1           std::pointer_traits<unsigned int const*>::pointer_to(unsigned int const&) [34]
+[44]     0.0    0.00    0.00       1         unsigned int const* std::addressof<unsigned int const>(unsigned int const&) [44]
+                0.00    0.00       1/1           unsigned int const* std::__addressof<unsigned int const>(unsigned int const&) [42]
+-----------------------------------------------
+                0.00    0.00       1/1           main [21]
+[45]     0.0    0.00    0.00       1         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*) [45]
+                0.00    0.00       1/1           std::remove_reference<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>::type&& std::move<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [43]
+-----------------------------------------------
+                0.00    0.00       1/1           main [21]
+[46]     0.0    0.00    0.00       1         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [46]
+                0.00    0.00       1/1           std::char_traits<char>::length(char const*) [33]
+                0.00    0.00       1/1           __gnu_cxx::__alloc_traits<std::allocator<char>, char>::_S_select_on_copy(std::allocator<char> const&) [29]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [24] __static_initialization_and_destruction_0(int, int) (main.cpp) [11] Tunnel::draw_object(sf::RenderWindow&, unsigned int) [34] std::pointer_traits<unsigned int const*>::pointer_to(unsigned int const&)
+  [25] sf::ContextSettings::ContextSettings(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool) [13] Tunnel::calculate_drag() [35] std::allocator_traits<std::allocator<char> >::select_on_container_copy_construction(std::allocator<char> const&)
+  [26] sf::String::~String()   [3] Tunnel::set_boundaries_sector(Particle*, unsigned int, unsigned int, unsigned int) [36] std::allocator_traits<std::allocator<unsigned int> >::deallocate(std::allocator<unsigned int>&, unsigned int*, unsigned long)
+  [12] Fluid::max_velocity()  [14] Tunnel::Tunnel(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, unsigned int, unsigned int, float, unsigned int, unsigned int, float) [37] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_destroy(unsigned long)
+   [6] Fluid::drawParticles(sf::RenderTarget&, int, bool, bool, bool) [9] Particle::Particle() [38] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_dispose()
+   [7] Fluid::diffuse_sector(Particle*, float, float, unsigned int, unsigned int) [27] __gnu_cxx::new_allocator<unsigned int>::deallocate(unsigned int*, unsigned long) [39] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_Alloc_hider::~_Alloc_hider()
+  [10] Fluid::external_forces(float) [28] __gnu_cxx::new_allocator<unsigned int>::~new_allocator() [40] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_get_allocator()
+   [8] Fluid::pressure_sector(float, unsigned int, unsigned int) [29] __gnu_cxx::__alloc_traits<std::allocator<char>, char>::_S_select_on_copy(std::allocator<char> const&) [41] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::~basic_string()
+   [4] Fluid::advect_iteration(Particle*, float, unsigned int, unsigned int) [30] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_is_local() const [42] unsigned int const* std::__addressof<unsigned int const>(unsigned int const&)
+   [1] Fluid::diffuse_iteration(Particle*, float, float, unsigned int, unsigned int) [31] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_local_data() const [43] std::remove_reference<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>::type&& std::move<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+   [5] Fluid::incompressibility(float) [23] std::__cxx11::basic_string<unsigned int, std::char_traits<unsigned int>, std::allocator<unsigned int> >::_M_data() const [44] unsigned int const* std::addressof<unsigned int const>(unsigned int const&)
+   [2] Fluid::pressure_iteration(float, unsigned int, unsigned int) [32] std::allocator<unsigned int>::~allocator() [45] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*)
+  [15] Fluid::~Fluid()        [33] std::char_traits<char>::length(char const*) [46] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(char const*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)

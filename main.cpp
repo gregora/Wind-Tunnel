@@ -138,6 +138,7 @@ int main(int args, char** argv){
         std::cout << std::endl;
 
         frame += 1;
+        //return 0;
     }
 
     if(render){
