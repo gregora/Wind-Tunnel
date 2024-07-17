@@ -64,8 +64,11 @@ void diffuse_kernel(Particle* newParticles, Particle* particles, float delta, fl
 void Fluid::diffuse(float delta, float viscosity){
 
     cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
+    std::thread threads_array[threads];
 
     for(uint k = 0; k < gs_iters; k++){       
+
+        /*
         cudaMemcpy(particles2_CUDA, newParticles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
 
         diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
@@ -76,7 +79,19 @@ void Fluid::diffuse(float delta, float viscosity){
         set_boundaries(newParticles, width, height, 1);
         set_boundaries(newParticles, width, height, 2);
         set_boundaries(newParticles, width, height, 5);
+        */
 
+        for(uint t = 0; t < threads; t++){
+            threads_array[t] = std::thread(&Fluid::diffuse_sector, this, newParticles, delta, viscosity, t * width / threads, (t + 1) * width / threads);
+        }        
+
+        for(uint t = 0; t < threads; t++){
+            threads_array[t].join();
+        }
+
+        set_boundaries(newParticles, width, height, 1);
+        set_boundaries(newParticles, width, height, 2);
+        set_boundaries(newParticles, width, height, 5);
     }
 
     Particle* oldParticles = particles;
@@ -86,6 +101,23 @@ void Fluid::diffuse(float delta, float viscosity){
 }
 
 void Fluid::diffuse_iteration(Particle* newParticles, float delta, float viscosity, uint i, uint j){
+    Particle& p = newParticles[coords2index(i, j, width)];
+    Particle& p0 = particles[coords2index(i, j, width)];
+
+    Particle& p1 = newParticles[coords2index(i + 1, j, width)];
+    Particle& p2 = newParticles[coords2index(i - 1, j, width)];
+    Particle& p3 = newParticles[coords2index(i, j + 1, width)];
+    Particle& p4 = newParticles[coords2index(i, j - 1, width)];
+
+    float a = (delta * viscosity) / (dx * dx);
+    float a_inv = 1 + 4 * a;
+
+    p.vx = (p0.vx + a * (p1.vx + p2.vx + p3.vx + p4.vx)) / a_inv;
+    p.vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / a_inv;
+    p.smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / a_inv;
+
+    p.Fx = p0.Fx;
+    p.Fy = p0.Fy;
 }
 
 
@@ -203,6 +235,15 @@ void pressure_kernel(float delta, float dx, Particle* particles, uint width, uin
 
 
 void Fluid::pressure_iteration(float delta, uint i, uint j){
+    Particle& p = particles[coords2index(i, j, width)];
+
+    Particle& p1 = particles[coords2index(i + 1, j, width)];
+    Particle& p2 = particles[coords2index(i - 1, j, width)];
+
+    Particle& p3 = particles[coords2index(i, j + 1, width)];
+    Particle& p4 = particles[coords2index(i, j - 1, width)];
+
+    p.p = (p1.p + p2.p + p3.p + p4.p - p.div * dx * dx / delta) / 4;
 }
 
 void Fluid::incompressibility(float delta){
@@ -230,7 +271,6 @@ void Fluid::incompressibility(float delta){
     set_boundaries(particles, width, height, 4);
 
     for(uint k = 0; k < gs_iters; k++){
-
         cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
 
         pressure_kernel<<<width - 2, height - 2>>>(delta, dx, particles1_CUDA, width, height);
@@ -239,7 +279,21 @@ void Fluid::incompressibility(float delta){
         cudaMemcpy(particles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
 
         set_boundaries(particles, width, height, 4);
+        
 
+        /*
+        std::thread threads_array[threads];
+
+        for(uint t = 0; t < threads; t++){
+            threads_array[t] = std::thread(&Fluid::pressure_sector, this, delta, t * width / threads, (t + 1) * width / threads);
+        }
+
+        for(uint t = 0; t < threads; t++){
+            threads_array[t].join();
+        }
+
+        set_boundaries(particles, width, height, 4);
+        */
     }
 
 
@@ -501,6 +555,16 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
 
 
 void Fluid::diffuse_sector(Particle* newParticles, float delta, float viscosity, uint start, uint end){
+        for(uint i = start; i < end; i++){
+
+        if(i == 0 || i == width - 1){
+            continue;
+        }
+
+        for(uint j = 1; j < height - 1; j++){
+            diffuse_iteration(newParticles, delta, viscosity, i, j);
+        }
+    }
 }
 
 

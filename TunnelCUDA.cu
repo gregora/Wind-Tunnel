@@ -35,6 +35,7 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
 
 Tunnel::~Tunnel(){
     delete object_mask;
+    cudaFree(object_mask_CUDA);
 }
 
 

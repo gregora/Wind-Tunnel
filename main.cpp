@@ -126,8 +126,8 @@ int main(int args, char** argv){
 
         if(frame % subcomputatoins == 0){
             window.clear();
-            t.draw_object(window, block_size);
             t.drawParticles(window, block_size, render_energy, render_velocities, render_pressure);
+            t.draw_object(window, block_size);
             
             window.display();
 
