@@ -88,6 +88,7 @@ int main(int args, char** argv){
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20, 50);
     t.debug_performance = true;
     t.threads = threads;
+    t.gs_iters = 40;
     if (auto_delta && render){
             printf("ERROR: Rendering with auto delta is not possible!\n");
             return 1;

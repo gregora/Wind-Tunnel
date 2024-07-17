@@ -37,7 +37,7 @@ void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
 
-    sf::Color c(9, 31, 0);
+    sf::Color c(255, 255, 255);
 
     for(uint i = 0; i < width; i++){
 
