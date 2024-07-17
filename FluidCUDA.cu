@@ -68,7 +68,7 @@ void Fluid::diffuse(float delta, float viscosity){
 
     for(uint k = 0; k < gs_iters; k++){       
 
-        /*
+        
         cudaMemcpy(particles2_CUDA, newParticles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
 
         diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
@@ -76,11 +76,20 @@ void Fluid::diffuse(float delta, float viscosity){
 
         cudaMemcpy(newParticles, particles2_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
 
+        Particle* oldParticles = particles;
+        particles = newParticles;
+        newParticles = oldParticles;
+
         set_boundaries(newParticles, width, height, 1);
         set_boundaries(newParticles, width, height, 2);
         set_boundaries(newParticles, width, height, 5);
-        */
 
+        oldParticles = particles;
+        particles = newParticles;
+        newParticles = oldParticles;        
+
+        /*
+    
         for(uint t = 0; t < threads; t++){
             threads_array[t] = std::thread(&Fluid::diffuse_sector, this, newParticles, delta, viscosity, t * width / threads, (t + 1) * width / threads);
         }        
@@ -92,6 +101,7 @@ void Fluid::diffuse(float delta, float viscosity){
         set_boundaries(newParticles, width, height, 1);
         set_boundaries(newParticles, width, height, 2);
         set_boundaries(newParticles, width, height, 5);
+        */
     }
 
     Particle* oldParticles = particles;
