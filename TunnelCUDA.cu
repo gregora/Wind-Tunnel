@@ -226,14 +226,7 @@ void set_boundaries_kernel(Particle* particles, uint width, uint height, uint id
 
 
 void Tunnel::set_boundaries(Particle* particles, uint width, uint height, uint identifier){  
-
-    cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
-    
-    set_boundaries_kernel<<<width, height>>>(particles1_CUDA, width, height, identifier, speed, object_mask_CUDA);
-    cudaDeviceSynchronize();
-
-    cudaMemcpy(particles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
-
+    set_boundaries_kernel<<<width, height>>>(particles, width, height, identifier, speed, object_mask_CUDA);
 }
 
 

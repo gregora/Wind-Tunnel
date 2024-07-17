@@ -44,10 +44,10 @@ void diffuse_kernel(Particle* newParticles, Particle* particles, float delta, fl
     Particle& p = newParticles[coords2index(i, j, width)];
     Particle& p0 = particles[coords2index(i, j, width)];
 
-    Particle& p1 = particles[coords2index(i + 1, j, width)];
-    Particle& p2 = particles[coords2index(i - 1, j, width)];
-    Particle& p3 = particles[coords2index(i, j + 1, width)];
-    Particle& p4 = particles[coords2index(i, j - 1, width)];
+    Particle& p1 = newParticles[coords2index(i + 1, j, width)];
+    Particle& p2 = newParticles[coords2index(i - 1, j, width)];
+    Particle& p3 = newParticles[coords2index(i, j + 1, width)];
+    Particle& p4 = newParticles[coords2index(i, j - 1, width)];
 
     float a = (delta * viscosity) / (dx * dx);
     float a_inv = 1 + 4 * a;
@@ -66,47 +66,17 @@ void Fluid::diffuse(float delta, float viscosity){
     cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
     std::thread threads_array[threads];
 
-    for(uint k = 0; k < gs_iters; k++){       
-
-        
-        cudaMemcpy(particles2_CUDA, newParticles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
+    for(uint k = 0; k < gs_iters; k++){             
 
         diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
-        cudaDeviceSynchronize();
 
-        cudaMemcpy(newParticles, particles2_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
+        set_boundaries(particles2_CUDA, width, height, 1);
+        set_boundaries(particles2_CUDA, width, height, 2);
+        set_boundaries(particles2_CUDA, width, height, 5);
 
-        Particle* oldParticles = particles;
-        particles = newParticles;
-        newParticles = oldParticles;
-
-        set_boundaries(newParticles, width, height, 1);
-        set_boundaries(newParticles, width, height, 2);
-        set_boundaries(newParticles, width, height, 5);
-
-        oldParticles = particles;
-        particles = newParticles;
-        newParticles = oldParticles;        
-
-        /*
-    
-        for(uint t = 0; t < threads; t++){
-            threads_array[t] = std::thread(&Fluid::diffuse_sector, this, newParticles, delta, viscosity, t * width / threads, (t + 1) * width / threads);
-        }        
-
-        for(uint t = 0; t < threads; t++){
-            threads_array[t].join();
-        }
-
-        set_boundaries(newParticles, width, height, 1);
-        set_boundaries(newParticles, width, height, 2);
-        set_boundaries(newParticles, width, height, 5);
-        */
     }
 
-    Particle* oldParticles = particles;
-    particles = newParticles;
-    newParticles = oldParticles;
+    cudaMemcpy(particles1_CUDA, particles2_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
 
 }
 
@@ -227,6 +197,22 @@ void Fluid::external_forces(float delta){
 
 
 __global__
+void divergence_kernel(float dx, Particle* particles, uint width, uint height){
+    uint i = blockIdx.x + 1;
+    uint j = threadIdx.x + 1;
+
+    Particle& p = particles[coords2index(i, j, width)];
+
+    Particle& p1 = particles[coords2index(i + 1, j, width)];
+    Particle& p2 = particles[coords2index(i - 1, j, width)];
+
+    Particle& p3 = particles[coords2index(i, j + 1, width)];
+    Particle& p4 = particles[coords2index(i, j - 1, width)];
+
+    p.div = (p1.vx - p2.vx + p3.vy - p4.vy) / (2 * dx);
+}
+
+__global__
 void pressure_kernel(float delta, float dx, Particle* particles, uint width, uint height){
     uint i = blockIdx.x + 1;
     uint j = threadIdx.x + 1;
@@ -242,6 +228,22 @@ void pressure_kernel(float delta, float dx, Particle* particles, uint width, uin
     p.p = (p1.p + p2.p + p3.p + p4.p - p.div * dx * dx / delta) / 4;
 }
 
+__global__
+void incompressibility_update_kernel(Particle* particles, float delta, float dx, uint width, uint height){
+    uint i = blockIdx.x + 1;
+    uint j = threadIdx.x + 1;
+
+    Particle& p = particles[coords2index(i, j, width)];
+
+    Particle& p1 = particles[coords2index(i + 1, j, width)];
+    Particle& p2 = particles[coords2index(i - 1, j, width)];
+
+    Particle& p3 = particles[coords2index(i, j + 1, width)];
+    Particle& p4 = particles[coords2index(i, j - 1, width)];
+
+    p.vx = p.vx - delta*(p1.p - p2.p) / (2 * dx);
+    p.vy = p.vy - delta*(p3.p - p4.p) / (2 * dx);
+}
 
 
 void Fluid::pressure_iteration(float delta, uint i, uint j){
@@ -258,73 +260,27 @@ void Fluid::pressure_iteration(float delta, uint i, uint j){
 
 void Fluid::incompressibility(float delta){
 
-    float h = 1.0f / width;
+   
+    divergence_kernel<<<width - 2, height - 2>>>(dx, particles1_CUDA, width, height);
 
-    for(uint i = 1; i < width - 1; i++){
-        for(uint j = 1; j < height - 1; j++){
-
-            Particle& p = particles[coords2index(i, j, width)];
-
-            Particle& p1 = particles[coords2index(i + 1, j, width)];
-            Particle& p2 = particles[coords2index(i - 1, j, width)];
-
-            Particle& p3 = particles[coords2index(i, j + 1, width)];
-            Particle& p4 = particles[coords2index(i, j - 1, width)];
-
-            p.div = (p1.vx - p2.vx + p3.vy - p4.vy) / (2 * dx);
-            p.p = 0;
-
-        }
-    }
-
-    set_boundaries(particles, width, height, 3);
-    set_boundaries(particles, width, height, 4);
+    set_boundaries(particles1_CUDA, width, height, 3);
+    set_boundaries(particles1_CUDA, width, height, 4);
 
     for(uint k = 0; k < gs_iters; k++){
-        cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
 
         pressure_kernel<<<width - 2, height - 2>>>(delta, dx, particles1_CUDA, width, height);
-        cudaDeviceSynchronize();
-
-        cudaMemcpy(particles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
-
-        set_boundaries(particles, width, height, 4);
-        
-
-        /*
-        std::thread threads_array[threads];
-
-        for(uint t = 0; t < threads; t++){
-            threads_array[t] = std::thread(&Fluid::pressure_sector, this, delta, t * width / threads, (t + 1) * width / threads);
-        }
-
-        for(uint t = 0; t < threads; t++){
-            threads_array[t].join();
-        }
-
-        set_boundaries(particles, width, height, 4);
-        */
+        set_boundaries(particles1_CUDA, width, height, 4);
     }
+   
 
+    incompressibility_update_kernel<<<width - 2, height - 2>>>(particles1_CUDA, delta, dx, width, height);
 
-    for(uint i = 1; i < width - 1; i++){
-        for(uint j = 1; j < height - 1; j++){
-            Particle& p = particles[coords2index(i, j, width)];
+    set_boundaries(particles1_CUDA, width, height, 1);
+    set_boundaries(particles1_CUDA, width, height, 2);
+    set_boundaries(particles1_CUDA, width, height, 5);
+    cudaDeviceSynchronize();
 
-            Particle& p1 = particles[coords2index(i + 1, j, width)];
-            Particle& p2 = particles[coords2index(i - 1, j, width)];
-
-            Particle& p3 = particles[coords2index(i, j + 1, width)];
-            Particle& p4 = particles[coords2index(i, j - 1, width)];
-
-            p.vx = p.vx - delta*(p1.p - p2.p) / (2 * dx);
-            p.vy = p.vy - delta*(p3.p - p4.p) / (2 * dx);
-        }
-    }
-
-    set_boundaries(particles, width, height, 1);
-    set_boundaries(particles, width, height, 2);
-    set_boundaries(particles, width, height, 5);
+    cudaMemcpy(particles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
 
 }
 
@@ -615,9 +571,16 @@ void Fluid::advect(float delta){
         threads_array[t].join();
     }
 
-    set_boundaries(newParticles, width, height, 1);
-    set_boundaries(newParticles, width, height, 2);
-    set_boundaries(newParticles, width, height, 5);
+    cudaMemcpy(particles1_CUDA, newParticles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
+
+    set_boundaries(particles1_CUDA, width, height, 1);
+    set_boundaries(particles1_CUDA, width, height, 2);
+    set_boundaries(particles1_CUDA, width, height, 5);
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(newParticles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
+    
+
 
     Particle* oldParticles = particles;
     particles = newParticles;
