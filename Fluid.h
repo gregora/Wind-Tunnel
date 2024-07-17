@@ -49,6 +49,9 @@ class Fluid {
 
         Particle* particles;
 
+        Particle* particles1_CUDA;
+        Particle* particles2_CUDA;
+
         Fluid(uint width, uint height, float dx);
         ~Fluid();
 
@@ -81,6 +84,7 @@ class Fluid {
 
     private:
         Particle* newParticles;
+
 
 
 };
