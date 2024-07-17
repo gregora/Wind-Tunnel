@@ -63,9 +63,6 @@ void diffuse_kernel(Particle* newParticles, Particle* particles, float delta, fl
 
 void Fluid::diffuse(float delta, float viscosity){
 
-    cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
-    std::thread threads_array[threads];
-
     for(uint k = 0; k < gs_iters; k++){             
 
         diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
@@ -278,10 +275,6 @@ void Fluid::incompressibility(float delta){
     set_boundaries(particles1_CUDA, width, height, 1);
     set_boundaries(particles1_CUDA, width, height, 2);
     set_boundaries(particles1_CUDA, width, height, 5);
-    cudaDeviceSynchronize();
-
-    cudaMemcpy(particles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
-
 }
 
 void Fluid::physics(float delta){
@@ -292,30 +285,48 @@ void Fluid::physics(float delta){
     external_forces(delta);
     auto external_forces_time = std::chrono::high_resolution_clock::now();
 
+    cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
+    auto copy_time_1 = std::chrono::high_resolution_clock::now();
+
+
     advect(delta);
+    cudaDeviceSynchronize();
     auto advect_time = std::chrono::high_resolution_clock::now();
 
     diffuse(delta);
+    cudaDeviceSynchronize();
     auto diffuse_time = std::chrono::high_resolution_clock::now();
 
+
     incompressibility(delta);
+    cudaDeviceSynchronize();
     auto incompressibility_time = std::chrono::high_resolution_clock::now();
 
+    cudaMemcpy(particles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
+
+    auto copy_time_2 = std::chrono::high_resolution_clock::now();
 
     if (debug_performance){
         auto end = std::chrono::high_resolution_clock::now();
+
         std::chrono::duration<double> elapsed = end - start;
         std::chrono::duration<double> elapsed_external_forces = external_forces_time - start;
-        std::chrono::duration<double> elapsed_advect = advect_time - external_forces_time;
+        std::chrono::duration<double> elapsed_copy_1 = copy_time_1 - external_forces_time;
+        std::chrono::duration<double> elapsed_advect = advect_time - copy_time_1;
         std::chrono::duration<double> elapsed_diffuse = diffuse_time - advect_time;
         std::chrono::duration<double> elapsed_incompressibility = incompressibility_time - diffuse_time;
+        std::chrono::duration<double> elapsed_copy_2 = copy_time_2 - incompressibility_time;
 
         printf("Physics time: %fs:\n", elapsed.count());    
+        printf("    - Copy Host to Device: %fs (%f%)\n", elapsed_copy_1.count(), elapsed_copy_1.count() / elapsed.count() * 100);
         printf("    - External forces time: %fs (%f%)\n", elapsed_external_forces.count(), elapsed_external_forces.count() / elapsed.count() * 100);
         printf("    - Advection time: %fs (%f%)\n", elapsed_advect.count(), elapsed_advect.count() / elapsed.count() * 100);
         printf("    - Diffusion time: %fs (%f%)\n", elapsed_diffuse.count(), elapsed_diffuse.count() / elapsed.count() * 100);
         printf("    - Incompressibility time: %fs (%f%)\n", elapsed_incompressibility.count(), elapsed_incompressibility.count() / elapsed.count() * 100);
+        printf("    - Copy Device to Host: %fs (%f%)\n", elapsed_copy_2.count(), elapsed_copy_2.count() / elapsed.count() * 100);
     }
+    
+    
     
 }
 
@@ -550,6 +561,63 @@ void Fluid::advect_sector(Particle* newParticles, float delta, uint start, uint 
 
 }
 
+__global__
+void advect_kernel(Particle* particles, float delta, uint width, uint height, float dx){
+
+    uint i = blockIdx.x + 1;
+    uint j = threadIdx.x + 1;
+
+    // SEMI-LAGRANGIAN METHOD FOR SOLVING ADVECTION EQUATION
+    
+    Particle& p0 = particles[coords2index(i, j, width)];
+
+    float vx = p0.vx;
+    float vy = p0.vy;
+
+    float x = i - delta * vx / dx;
+    float y = j - delta * vy / dx;
+
+    if(x < 0.5){
+        x = 0.5;
+    }
+
+    if(x > width - 1.5){
+        x = width - 1.5;
+    }
+
+    if(y < 0.5){
+        y = 0.5;
+    }
+
+    if(y > height - 1.5){
+        y = height - 1.5;
+    }
+
+    float x0 = (uint) x;
+    float y0 = (uint) y;
+
+    float x1 = x0 + 1;
+    float y1 = y0 + 1;
+
+    float k1 = x - x0;
+    float k2 = 1 - k1;
+    float k3 = y - y0;
+    float k4 = 1 - k3;
+
+    Particle& p1 = particles[coords2index(x0, y0, width)];
+    Particle& p2 = particles[coords2index(x1, y0, width)];
+    Particle& p3 = particles[coords2index(x0, y1, width)];
+    Particle& p4 = particles[coords2index(x1, y1, width)];
+
+    Particle& p = particles[coords2index(i, j, width)];
+
+    p.vx = k2 * (k4 * p1.vx + k3 * p3.vx) + k1 * (k4 * p2.vx + k3 * p4.vx);
+    p.vy = k2 * (k4 * p1.vy + k3 * p3.vy) + k1 * (k4 * p2.vy + k3 * p4.vy);
+
+    p.smoke = k2 * (k4 * p1.smoke + k3 * p3.smoke) + k1 * (k4 * p2.smoke + k3 * p4.smoke);
+
+}
+
 void Fluid::advect(float delta){
 
     if(show_warnings){
@@ -560,32 +628,12 @@ void Fluid::advect(float delta){
 
         }
     }
-
-    std::thread threads_array[threads];
-
-    for(uint t = 0; t < threads; t++){
-        threads_array[t] = std::thread(&Fluid::advect_sector, this, newParticles, delta, t * width / threads, (t + 1) * width / threads);
-    }
-
-    for(uint t = 0; t < threads; t++){
-        threads_array[t].join();
-    }
-
-    cudaMemcpy(particles1_CUDA, newParticles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
+   
+    advect_kernel<<<width - 2, height - 2>>>(particles1_CUDA, delta, width, height, dx);
 
     set_boundaries(particles1_CUDA, width, height, 1);
     set_boundaries(particles1_CUDA, width, height, 2);
     set_boundaries(particles1_CUDA, width, height, 5);
-    cudaDeviceSynchronize();
-
-    cudaMemcpy(newParticles, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToHost);
-    
-
-
-    Particle* oldParticles = particles;
-    particles = newParticles;
-    newParticles = oldParticles;
-
 
 }
 
