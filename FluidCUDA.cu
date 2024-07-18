@@ -56,12 +56,11 @@ void diffuse_kernel(Particle* newParticles, Particle* particles, float delta, fl
     p.vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / a_inv;
     p.smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / a_inv;
 
-    p.Fx = p0.Fx;
-    p.Fy = p0.Fy;
-
 }
 
 void Fluid::diffuse(float delta, float viscosity){
+
+    cudaMemcpy(particles2_CUDA, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
 
     for(uint k = 0; k < gs_iters; k++){             
 
