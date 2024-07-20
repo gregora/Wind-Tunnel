@@ -25,6 +25,9 @@ class Tunnel : public Fluid {
         float calculate_lift();
         float calculate_drag();
 
+    private:
+        sf::Uint8* object_pixels;
+
 
 };
 

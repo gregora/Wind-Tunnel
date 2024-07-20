@@ -33,18 +33,10 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float
     cudaMemcpy(d_object_mask, object_mask, width * height, cudaMemcpyHostToDevice);
 
     object_mask_CUDA = d_object_mask;
-}
-
-Tunnel::~Tunnel(){
-    delete object_mask;
-    cudaFree(object_mask_CUDA);
-}
 
 
 
-void Tunnel::draw_object(sf::RenderTarget& target, float block_size){
-
-    sf::Uint8 pixels[width * height * 4];
+    object_pixels = new sf::Uint8[width * height * 4];
 
     for(uint i = 0; i < width; i++){
 
@@ -54,17 +46,29 @@ void Tunnel::draw_object(sf::RenderTarget& target, float block_size){
 
             uint8_t c = object_mask[index];
 
-            pixels[index * 4] = 255;
-            pixels[index * 4 + 1] = 255;
-            pixels[index * 4 + 2] = 255;
-            pixels[index * 4 + 3] = c;
+            object_pixels[index * 4] = 255;
+            object_pixels[index * 4 + 1] = 255;
+            object_pixels[index * 4 + 2] = 255;
+            object_pixels[index * 4 + 3] = c;
         }
 
     }
+}
+
+Tunnel::~Tunnel(){
+    delete object_mask;
+    cudaFree(object_mask_CUDA);
+
+    delete object_pixels;
+}
+
+
+
+void Tunnel::draw_object(sf::RenderTarget& target, float block_size){
 
     sf::Texture texture;
     texture.create(width, height);
-    texture.update(pixels);
+    texture.update(object_pixels);
     sf::Sprite sprite(texture);
     sprite.setScale(block_size, block_size);
     target.draw(sprite);

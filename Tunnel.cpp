@@ -27,6 +27,24 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float
         }
     }
 
+    object_pixels = new sf::Uint8[width * height * 4];
+
+    for(uint i = 0; i < width; i++){
+
+        for(uint j = 0; j < height; j++){
+
+            uint index = coords2index(i, j, width);
+
+            uint8_t c = object_mask[index];
+
+            object_pixels[index * 4] = 255;
+            object_pixels[index * 4 + 1] = 255;
+            object_pixels[index * 4 + 2] = 255;
+            object_pixels[index * 4 + 3] = c;
+        }
+
+    }
+
 }
 
 Tunnel::~Tunnel(){
@@ -37,27 +55,9 @@ Tunnel::~Tunnel(){
 
 void Tunnel::draw_object(sf::RenderTarget& target, float block_size){
 
-    sf::Uint8 pixels[width * height * 4];
-
-    for(uint i = 0; i < width; i++){
-
-        for(uint j = 0; j < height; j++){
-
-            uint index = coords2index(i, j, width);
-
-            uint8_t c = object_mask[index];
-
-            pixels[index * 4] = 255;
-            pixels[index * 4 + 1] = 255;
-            pixels[index * 4 + 2] = 255;
-            pixels[index * 4 + 3] = c;
-        }
-
-    }
-
     sf::Texture texture;
     texture.create(width, height);
-    texture.update(pixels);
+    texture.update(object_pixels);
     sf::Sprite sprite(texture);
     sprite.setScale(block_size, block_size);
     target.draw(sprite);
