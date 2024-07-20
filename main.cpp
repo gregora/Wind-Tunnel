@@ -23,10 +23,16 @@ int main(int args, char** argv){
     float simulation_time = 20;
     float delta = 0.001;
     uint threads = 1;
-    std::string object = "wing";
-    float object_scale = HEIGHT * 1 / 1000;
+    std::string object = "sphere";
 
-    int subcomputatoins = 1;
+    float object_scale = HEIGHT * 0.3 / 1000;
+    if(object == "wing"){
+        float object_scale = HEIGHT * 1 / 1000;
+    }else if(object == "sphere"){
+        float object_scale = HEIGHT * 0.07 / 1000;
+    }
+
+    int subcomputations = 1;
 
     bool render = false;
     bool render_energy = false;
@@ -76,7 +82,7 @@ int main(int args, char** argv){
         }
 
         if(strcmp(argv[i], "-subcomputations") == 0){
-            subcomputatoins = atof(argv[i + 1]);
+            subcomputations = atof(argv[i + 1]);
         }
 
         if(strcmp(argv[i], "-save") == 0){
@@ -89,7 +95,8 @@ int main(int args, char** argv){
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, object_scale, threads, 20, 50);
     t.debug_performance = true;
     t.threads = threads;
-    t.gs_iters = 100;
+    t.gs_iters_diffuse = 40;
+    t.gs_iters_incompressibility = 100;
     if (auto_delta && render){
             printf("ERROR: Rendering with auto delta is not possible!\n");
             return 1;
@@ -125,7 +132,7 @@ int main(int args, char** argv){
         t.physics(delta);
         auto end = std::chrono::high_resolution_clock::now();
 
-        if(frame % subcomputatoins == 0){
+        if(frame % subcomputations == 0){
             window.clear();
             t.drawParticles(window, scale, render_energy, render_velocities, render_pressure);
             t.draw_object(window, scale);
@@ -165,7 +172,7 @@ int main(int args, char** argv){
 
     if(render){
 		printf("Rendering ...\n");
-		system(std::string(("ffmpeg -y -framerate ") + std::to_string((int) (1 / delta / subcomputatoins)) + std::string(" -i render/%d.png render/output.mp4 > /dev/null")).c_str());
+		system(std::string(("ffmpeg -y -framerate ") + std::to_string((int) (1 / delta / subcomputations)) + std::string(" -i render/%d.png render/output.mp4 > /dev/null")).c_str());
 		printf("Deleting pngs ...\n");
 		system("rm -r render/*.png");
 		printf("Done.\n");

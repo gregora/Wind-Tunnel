@@ -178,7 +178,7 @@ void Fluid::incompressibility(float delta){
     set_boundaries(particles, width, height, 3);
     set_boundaries(particles, width, height, 4);
 
-    for(uint k = 0; k < gs_iters; k++){
+    for(uint k = 0; k < gs_iters_incompressibility; k++){
         std::thread threads_array[threads];
 
         for(uint t = 0; t < threads; t++){
@@ -469,7 +469,7 @@ void Fluid::diffuse_sector(Particle* newParticles, float delta, float viscosity,
 void Fluid::diffuse(float delta, float viscosity){
 
     std::thread threads_array[threads];
-    for(uint k = 0; k < gs_iters; k++){       
+    for(uint k = 0; k < gs_iters_diffuse; k++){       
         for(uint t = 0; t < threads; t++){
             threads_array[t] = std::thread(&Fluid::diffuse_sector, this, newParticles, delta, viscosity, t * width / threads, (t + 1) * width / threads);
         }        

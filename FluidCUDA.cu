@@ -152,7 +152,7 @@ void Fluid::diffuse(float delta, float viscosity){
 
     cudaMemcpy(particles2_CUDA, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
 
-    for(uint k = 0; k < gs_iters; k++){             
+    for(uint k = 0; k < gs_iters_diffuse; k++){             
 
         diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
 
@@ -226,7 +226,7 @@ void Fluid::incompressibility(float delta){
     set_boundaries(particles1_CUDA, width, height, 3);
     set_boundaries(particles1_CUDA, width, height, 4);
 
-    for(uint k = 0; k < gs_iters; k++){
+    for(uint k = 0; k < gs_iters_incompressibility; k++){
 
         pressure_kernel<<<width - 2, height - 2>>>(delta, dx, particles1_CUDA, width, height);
         set_boundaries(particles1_CUDA, width, height, 4);

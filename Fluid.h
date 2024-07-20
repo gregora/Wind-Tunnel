@@ -45,7 +45,8 @@ class Fluid {
 
         uint threads = 1; // Number of threads to use
         
-        uint gs_iters = 20; // Number of Gauss-Seidel iterations
+        uint gs_iters_diffuse = 20; // Number of Gauss-Seidel iterations for diffusion
+        uint gs_iters_incompressibility = 20; // Number of Gauss-Seidel iterations for incopressibility
 
         Particle* particles;
 
