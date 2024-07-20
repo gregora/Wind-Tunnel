@@ -3,14 +3,6 @@
 #include <chrono>
 
 
-// now as macro
-/*
-int coords2index(int x, int y, int width){
-    return y * width + x;
-}
-*/
-
-
 Fluid::Fluid(uint width, uint height, float dx){
 
     this->width = width;
@@ -35,16 +27,24 @@ Fluid::~Fluid(){
 }
 
 
-void Fluid::external_forces(float delta){
-    
-    for(uint i = 1; i < width - 1; i++){
-        for(uint j = 1; j < height - 1; j++){
-            Particle& p = particles[coords2index(i, j, width)];
+__global__
+void external_forces_kernel(Particle* particles, float delta, uint width, uint height){
+    uint i = blockIdx.x + 1;
+    uint j = threadIdx.x + 1;
 
-            p.vx += delta * p.Fx;
-            p.vy += delta * p.Fy;
-        }
-    }
+    Particle& p = particles[coords2index(i, j, width)];
+
+    p.vx += delta * p.Fx;
+    p.vy += delta * p.Fy;
+}
+
+void Fluid::external_forces(float delta){
+
+    external_forces_kernel<<<width - 2, height - 2>>>(particles1_CUDA, delta, width, height);
+
+    set_boundaries(particles1_CUDA, width, height, 1);
+    set_boundaries(particles1_CUDA, width, height, 2);
+    set_boundaries(particles1_CUDA, width, height, 5);
 }
 
 
