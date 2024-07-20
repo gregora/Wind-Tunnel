@@ -1,6 +1,6 @@
 #include "Tunnel.h"
 
-Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
+Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float scale, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
 
     threads = threads;
     gs_iters = gs_iters;
@@ -10,18 +10,15 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
     sf::Image object;
     object.loadFromFile(object_file);
 
-    float scalex = (float) width / object.getSize().x;
-    float scaley = (float) height / object.getSize().y;
-
-    sf::Image scaled_object;
-    scaled_object.create(width, height);
-
     object_mask = new uint8_t[width * height];
 
     for(uint i = 0; i < width; i++){
         for(uint j = 0; j < height; j++){
-            scaled_object.setPixel(i, j, object.getPixel(i / scalex, j / scaley));
-            object_mask[coords2index(i, j, width)] = scaled_object.getPixel(i, j).a;        
+            if(i * scale < object.getSize().x && j * scale < object.getSize().y){
+                object_mask[coords2index(i, j, width)] = object.getPixel(i * scale, j * scale).a;
+            } else {
+                object_mask[coords2index(i, j, width)] = 0;
+            }
         }
     }
 
@@ -102,7 +99,7 @@ void set_boundaries_kernel(Particle* particles, uint width, uint height, uint id
             particles[coords2index(0, j, width)].smoke = 0;
             particles[coords2index(width - 1, j, width)].smoke = particles[coords2index(width - 2, j, width)].smoke;
         
-            if(j >= smoke_start && j < smoke_end){
+            if(j >= smoke_start && j <= smoke_end){
                 particles[coords2index(0, j, width)].smoke = 0.5;
             }
 

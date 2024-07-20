@@ -14,7 +14,7 @@ class Tunnel : public Fluid {
         uint8_t* object_mask = NULL;
         uint8_t* object_mask_CUDA = NULL;
 
-        Tunnel(std::string object_file, uint width, uint height, float dx = 1, uint threads = 1, uint gs_iters = 20, float speed = 50);
+        Tunnel(std::string object_file, uint width, uint height, float dx = 1, float scale = 1, uint threads = 1, uint gs_iters = 20, float speed = 50);
         ~Tunnel();
 
         void draw_object(sf::RenderWindow& window, uint block_size = 20);

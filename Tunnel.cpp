@@ -1,6 +1,6 @@
 #include "Tunnel.h"
 
-Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
+Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float scale, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
 
     threads = threads;
     gs_iters = gs_iters;
@@ -10,9 +10,6 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
     sf::Image object;
     object.loadFromFile(object_file);
 
-    float scalex = (float) width / object.getSize().x;
-    float scaley = (float) height / object.getSize().y;
-
     sf::Image scaled_object;
     scaled_object.create(width, height);
 
@@ -20,7 +17,7 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, uint 
 
     for(uint i = 0; i < width; i++){
         for(uint j = 0; j < height; j++){
-            scaled_object.setPixel(i, j, object.getPixel(i / scalex, j / scaley));
+            scaled_object.setPixel(i, j, object.getPixel(i / scale, j / scale));
             object_mask[coords2index(i, j, width)] = scaled_object.getPixel(i, j).a;        
         }
     }

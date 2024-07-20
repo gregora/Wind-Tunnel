@@ -12,11 +12,11 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 960;
-    float HEIGHT = 800;
+    float WIDTH = 400;
+    float HEIGHT = 80;
 
-    float WINDOW_WIDTH = 1200;
-    float WINDOW_HEIGHT = 1000;
+    float WINDOW_WIDTH = 1000;
+    float WINDOW_HEIGHT = 200;
 
     uint block_size = (uint) (WINDOW_WIDTH / WIDTH);
 
@@ -24,6 +24,8 @@ int main(int args, char** argv){
     float delta = 0.001;
     uint threads = 1;
     std::string object = "wing";
+    float object_scale = HEIGHT * 0.2 / 1000;
+    object_scale = 1;
 
     int subcomputatoins = 1;
 
@@ -85,7 +87,7 @@ int main(int args, char** argv){
 
     }
 
-    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, threads, 20, 50);
+    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, object_scale, threads, 20, 50);
     t.debug_performance = true;
     t.threads = threads;
     t.gs_iters = 100;
