@@ -42,23 +42,32 @@ Tunnel::~Tunnel(){
 
 
 
-void Tunnel::draw_object(sf::RenderWindow& window, float block_size){
+void Tunnel::draw_object(sf::RenderTarget& target, float block_size){
 
-    sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
-
-    sf::Color c(255, 255, 255);
+    sf::Uint8 pixels[width * height * 4];
 
     for(uint i = 0; i < width; i++){
 
         for(uint j = 0; j < height; j++){
 
-            rect.setPosition(i * block_size, j * block_size);
-            c.a = object_mask[coords2index(i, j, width)];
-            rect.setFillColor(c);
-            window.draw(rect);
+            uint index = coords2index(i, j, width);
+
+            uint8_t c = object_mask[index];
+
+            pixels[index * 4] = 255;
+            pixels[index * 4 + 1] = 255;
+            pixels[index * 4 + 2] = 255;
+            pixels[index * 4 + 3] = c;
         }
 
     }
+
+    sf::Texture texture;
+    texture.create(width, height);
+    texture.update(pixels);
+    sf::Sprite sprite(texture);
+    sprite.setScale(block_size, block_size);
+    target.draw(sprite);
 
 }
 
@@ -241,7 +250,7 @@ float Tunnel::calculate_lift(){
 
             const uint8_t c = object_mask[coords2index(i, j, width)];
             if(c == 255){
-                lift += p.vy;
+                lift += p.vy*dx;
             }
 
         }
@@ -259,7 +268,7 @@ float Tunnel::calculate_drag(){
 
             const uint8_t c = object_mask[coords2index(i, j, width)];
             if(c == 255){
-                drag += -p.vx;
+                drag += -p.vx*dx;
             }
 
         }

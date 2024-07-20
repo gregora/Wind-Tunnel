@@ -12,8 +12,8 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 800;
-    float HEIGHT = 160;
+    float WIDTH = 400;
+    float HEIGHT = 80;
 
     float WINDOW_WIDTH = 1000;
     float WINDOW_HEIGHT = 200;
@@ -96,7 +96,7 @@ int main(int args, char** argv){
     t.debug_performance = true;
     t.threads = threads;
     t.gs_iters_diffuse = 40;
-    t.gs_iters_incompressibility = 100;
+    t.gs_iters_incompressibility = 80;
     if (auto_delta && render){
             printf("ERROR: Rendering with auto delta is not possible!\n");
             return 1;
@@ -112,6 +112,9 @@ int main(int args, char** argv){
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Wind Tunnel Simulation");
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
+    sf::RenderTexture tunnel_texture;
+    tunnel_texture.create(WIDTH, HEIGHT);
 
     int frame = 0;
     float time_elapsed = 0;
