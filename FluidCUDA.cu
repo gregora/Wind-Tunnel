@@ -245,12 +245,12 @@ void Fluid::physics(float delta){
     //measure time of physics
     auto start = std::chrono::high_resolution_clock::now();
 
-    external_forces(delta);
-    auto external_forces_time = std::chrono::high_resolution_clock::now();
-
     cudaMemcpy(particles1_CUDA, particles, width * height * sizeof(Particle), cudaMemcpyHostToDevice);
     auto copy_time_1 = std::chrono::high_resolution_clock::now();
 
+    external_forces(delta);
+    cudaDeviceSynchronize();
+    auto external_forces_time = std::chrono::high_resolution_clock::now();
 
     advect(delta);
     cudaDeviceSynchronize();
@@ -273,8 +273,8 @@ void Fluid::physics(float delta){
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> elapsed = end - start;
-        std::chrono::duration<double> elapsed_external_forces = external_forces_time - start;
-        std::chrono::duration<double> elapsed_copy_1 = copy_time_1 - external_forces_time;
+        std::chrono::duration<double> elapsed_copy_1 = copy_time_1 - start;
+        std::chrono::duration<double> elapsed_external_forces = external_forces_time - copy_time_1;
         std::chrono::duration<double> elapsed_advect = advect_time - copy_time_1;
         std::chrono::duration<double> elapsed_diffuse = diffuse_time - advect_time;
         std::chrono::duration<double> elapsed_incompressibility = incompressibility_time - diffuse_time;
