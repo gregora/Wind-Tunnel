@@ -10,15 +10,20 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float
     sf::Image object;
     object.loadFromFile(object_file);
 
-    sf::Image scaled_object;
-    scaled_object.create(width, height);
-
     object_mask = new uint8_t[width * height];
 
-    for(uint i = 0; i < width; i++){
-        for(uint j = 0; j < height; j++){
-            scaled_object.setPixel(i, j, object.getPixel(i / scale, j / scale));
-            object_mask[coords2index(i, j, width)] = scaled_object.getPixel(i, j).a;        
+    for(int i = 0; i < width; i++){
+        for(int j = 0; j < height; j++){
+
+            
+            float object_x = object.getSize().x/2 + ((i - (float) width/5) / scale);
+            float object_y = object.getSize().y/2 + ((j - (float) height/2) / scale);
+
+            if(object_x >= 0 && object_x < object.getSize().x && object_y >= 0 && object_y < object.getSize().y){
+                object_mask[coords2index(i, j, width)] = object.getPixel((int) object_x, (int) object_y).a;
+            } else {
+                object_mask[coords2index(i, j, width)] = 0;
+            }
         }
     }
 

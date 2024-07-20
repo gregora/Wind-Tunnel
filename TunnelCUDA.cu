@@ -16,7 +16,7 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float
         for(int j = 0; j < height; j++){
 
             
-            float object_x = object.getSize().x/2 + ((i - (float) width/2) / scale);
+            float object_x = object.getSize().x/2 + ((i - (float) width/5) / scale);
             float object_y = object.getSize().y/2 + ((j - (float) height/2) / scale);
 
             if(object_x >= 0 && object_x < object.getSize().x && object_y >= 0 && object_y < object.getSize().y){
