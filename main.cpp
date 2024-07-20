@@ -95,8 +95,8 @@ int main(int args, char** argv){
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, object_scale, threads, 20, 50);
     t.debug_performance = true;
     t.threads = threads;
-    t.gs_iters_diffuse = 40;
-    t.gs_iters_incompressibility = 80;
+    t.gs_iters_diffuse = 100;
+    t.gs_iters_incompressibility = 100;
     if (auto_delta && render){
             printf("ERROR: Rendering with auto delta is not possible!\n");
             return 1;
@@ -110,11 +110,39 @@ int main(int args, char** argv){
     sf::Image icon;
     icon.loadFromFile("icon.png");
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Wind Tunnel Simulation");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT + 100), "Wind Tunnel Simulation");
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
     sf::RenderTexture tunnel_texture;
-    tunnel_texture.create(WIDTH, HEIGHT);
+    tunnel_texture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    sf::Font font;
+    font.loadFromFile("fonts/Prototype.ttf");
+
+    sf::Text lift_text;
+    lift_text.setFont(font);
+    lift_text.setCharacterSize(15);
+    lift_text.setFillColor(sf::Color::White);
+    lift_text.setPosition(10, WINDOW_HEIGHT + 10);
+
+    sf::Text drag_text;
+    drag_text.setFont(font);
+    drag_text.setCharacterSize(15);
+    drag_text.setFillColor(sf::Color::White);
+    drag_text.setPosition(10, WINDOW_HEIGHT + 40);
+
+    sf::Text delta_text;
+    delta_text.setFont(font);
+    delta_text.setCharacterSize(15);
+    delta_text.setFillColor(sf::Color::White);
+    delta_text.setPosition(10, WINDOW_HEIGHT + 70);
+
+    sf::Text time_text;
+    time_text.setFont(font);
+    time_text.setCharacterSize(20);
+    time_text.setFillColor(sf::Color::White);
+    time_text.setPosition(WINDOW_WIDTH - 200, WINDOW_HEIGHT + 10);
+
 
     int frame = 0;
     float time_elapsed = 0;
@@ -135,11 +163,30 @@ int main(int args, char** argv){
         t.physics(delta);
         auto end = std::chrono::high_resolution_clock::now();
 
+        float lift = t.calculate_lift();
+        float drag = t.calculate_drag();
+
         if(frame % subcomputations == 0){
-            window.clear();
-            t.drawParticles(window, scale, render_energy, render_velocities, render_pressure);
-            t.draw_object(window, scale);
+            //clear with gray
+            window.clear(sf::Color(20, 20, 20));
+
+
+            t.drawParticles(tunnel_texture, scale, render_energy, render_velocities, render_pressure);
+            t.draw_object(tunnel_texture, scale);
             
+            sf::Sprite tunnel_sprite(tunnel_texture.getTexture());
+            window.draw(tunnel_sprite);
+
+            lift_text.setString("Lift: " + std::to_string((int) lift));
+            drag_text.setString("Drag: " + std::to_string((int) drag));
+            delta_text.setString("Delta: " + std::to_string(delta));
+            time_text.setString("Time: " + std::to_string(time_elapsed) + "s");
+
+            window.draw(lift_text);
+            window.draw(drag_text);
+            window.draw(delta_text);
+            window.draw(time_text);
+
             window.display();
 
 
@@ -152,7 +199,9 @@ int main(int args, char** argv){
 
         }
 
+        /*
         std::cout << std::endl;
+
         std::cout << "Lift: " << t.calculate_lift() << std::endl;
         std::cout << "Drag: " << t.calculate_drag() << std::endl;
 
@@ -161,7 +210,7 @@ int main(int args, char** argv){
         }
 
         std::cout << std::endl;
-
+        */
 
         if(save_data != ""){
 
