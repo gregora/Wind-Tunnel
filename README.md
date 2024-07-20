@@ -3,6 +3,8 @@ A wind tunnel simulation using Navier-Stokes equations. Project is built on top 
 
 The project is written in C++ with CUDA used as hardware acceleration for physics computations.
 
+https://github.com/user-attachments/assets/9e9e5a53-2be8-43f6-aa88-61d51a30b7d5
+
 ## Showcase
 
 ### Sphere
