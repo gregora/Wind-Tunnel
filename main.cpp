@@ -199,22 +199,9 @@ int main(int args, char** argv){
 
         }
 
-        /*
-        std::cout << std::endl;
-
-        std::cout << "Lift: " << t.calculate_lift() << std::endl;
-        std::cout << "Drag: " << t.calculate_drag() << std::endl;
-
-        if(auto_delta){
-            std::cout << "Delta: " << delta << std::endl;
-        }
-
-        std::cout << std::endl;
-        */
-
         if(save_data != ""){
 
-            save_file << time_elapsed << "," << t.calculate_lift() << "," << t.calculate_drag() << std::endl;
+            save_file << time_elapsed << "," << lift << "," << drag << std::endl;
         }
 
         frame += 1;
