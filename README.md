@@ -23,6 +23,7 @@ Raw data for this experiment is available in `data/sphere.csv`.
 
 ### Dependencies
 * SFML
+* OpenCV
 
 ### Compilation
 Run `make` in the root directory. As this project is written both for CUDA and non-CUDA devices you can compile for both.
