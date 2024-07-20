@@ -35,96 +35,24 @@ Fluid::~Fluid(){
 }
 
 
-__global__
-void diffuse_kernel(Particle* newParticles, Particle* particles, float delta, float dx, float viscosity, uint width, uint height){
+void Fluid::external_forces(float delta){
     
+    for(uint i = 1; i < width - 1; i++){
+        for(uint j = 1; j < height - 1; j++){
+            Particle& p = particles[coords2index(i, j, width)];
+
+            p.vx += delta * p.Fx;
+            p.vy += delta * p.Fy;
+        }
+    }
+}
+
+
+__global__
+void advect_kernel(Particle* particles, float delta, uint width, uint height, float dx){
+
     uint i = blockIdx.x + 1;
     uint j = threadIdx.x + 1;
-
-    Particle& p = newParticles[coords2index(i, j, width)];
-    Particle& p0 = particles[coords2index(i, j, width)];
-
-    Particle& p1 = newParticles[coords2index(i + 1, j, width)];
-    Particle& p2 = newParticles[coords2index(i - 1, j, width)];
-    Particle& p3 = newParticles[coords2index(i, j + 1, width)];
-    Particle& p4 = newParticles[coords2index(i, j - 1, width)];
-
-    float a = (delta * viscosity) / (dx * dx);
-    float a_inv = 1 + 4 * a;
-
-    p.vx = (p0.vx + a * (p1.vx + p2.vx + p3.vx + p4.vx)) / a_inv;
-    p.vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / a_inv;
-    p.smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / a_inv;
-
-}
-
-void Fluid::diffuse(float delta, float viscosity){
-
-    cudaMemcpy(particles2_CUDA, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
-
-    for(uint k = 0; k < gs_iters; k++){             
-
-        diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
-
-        set_boundaries(particles2_CUDA, width, height, 1);
-        set_boundaries(particles2_CUDA, width, height, 2);
-        set_boundaries(particles2_CUDA, width, height, 5);
-
-    }
-
-    cudaMemcpy(particles1_CUDA, particles2_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
-
-}
-
-void Fluid::diffuse_iteration(Particle* newParticles, float delta, float viscosity, uint i, uint j){
-    Particle& p = newParticles[coords2index(i, j, width)];
-    Particle& p0 = particles[coords2index(i, j, width)];
-
-    Particle& p1 = newParticles[coords2index(i + 1, j, width)];
-    Particle& p2 = newParticles[coords2index(i - 1, j, width)];
-    Particle& p3 = newParticles[coords2index(i, j + 1, width)];
-    Particle& p4 = newParticles[coords2index(i, j - 1, width)];
-
-    float a = (delta * viscosity) / (dx * dx);
-    float a_inv = 1 + 4 * a;
-
-    p.vx = (p0.vx + a * (p1.vx + p2.vx + p3.vx + p4.vx)) / a_inv;
-    p.vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / a_inv;
-    p.smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / a_inv;
-
-    p.Fx = p0.Fx;
-    p.Fy = p0.Fy;
-}
-
-
-
-void Fluid::advect_iteration(Particle* newParticles, float delta, uint i, uint j){
-
-    // LAX METHOD FOR SOLVING ADVECTION EQUATION
-    // this method is so far unstable
-
-    /*
-    Particle& p0 = particles[coords2index(i, j, width)];
-
-    float vx = p0.vx;
-    float vy = p0.vy;
-
-
-    Particle& p1 = particles[coords2index(i + 1, j, width)];
-    Particle& p2 = particles[coords2index(i - 1, j, width)];
-
-    Particle& p3 = particles[coords2index(i, j + 1, width)];
-    Particle& p4 = particles[coords2index(i, j - 1, width)];
-
-
-    Particle& p = newParticles[coords2index(i, j, width)];
-
-    p.vx = p0.vx - p.vx * delta / dx * (p0.vx - p2.vx) - p.vy * delta / dx * (p0.vx - p4.vx);
-    p.vy = p0.vy - p.vx * delta / dx * (p0.vy - p2.vy) - p.vy * delta / dx * (p0.vy - p4.vy);
-
-    p.smoke = p0.smoke - p.vx * delta / dx * (p0.smoke - p2.smoke) - p.vy * delta / dx * (p0.smoke - p4.smoke);
-    */
-
 
     // SEMI-LAGRANGIAN METHOD FOR SOLVING ADVECTION EQUATION
     
@@ -168,27 +96,74 @@ void Fluid::advect_iteration(Particle* newParticles, float delta, uint i, uint j
     Particle& p3 = particles[coords2index(x0, y1, width)];
     Particle& p4 = particles[coords2index(x1, y1, width)];
 
-    Particle& p = newParticles[coords2index(i, j, width)];
+    Particle& p = particles[coords2index(i, j, width)];
 
     p.vx = k2 * (k4 * p1.vx + k3 * p3.vx) + k1 * (k4 * p2.vx + k3 * p4.vx);
     p.vy = k2 * (k4 * p1.vy + k3 * p3.vy) + k1 * (k4 * p2.vy + k3 * p4.vy);
 
     p.smoke = k2 * (k4 * p1.smoke + k3 * p3.smoke) + k1 * (k4 * p2.smoke + k3 * p4.smoke);
 
+}
+
+void Fluid::advect(float delta){
+
+    if(show_warnings){
+        float max_dt = max_delta();
+        if(max_dt < delta){
+            printf("WARNING: Advection is unstable!\n");
+            printf("         delta = %f, delta_max = %f\n", delta, max_dt);
+
+        }
+    }
+   
+    advect_kernel<<<width - 2, height - 2>>>(particles1_CUDA, delta, width, height, dx);
+
+    set_boundaries(particles1_CUDA, width, height, 1);
+    set_boundaries(particles1_CUDA, width, height, 2);
+    set_boundaries(particles1_CUDA, width, height, 5);
 
 }
 
 
-void Fluid::external_forces(float delta){
+__global__
+void diffuse_kernel(Particle* newParticles, Particle* particles, float delta, float dx, float viscosity, uint width, uint height){
     
-    for(uint i = 1; i < width - 1; i++){
-        for(uint j = 1; j < height - 1; j++){
-            Particle& p = particles[coords2index(i, j, width)];
+    uint i = blockIdx.x + 1;
+    uint j = threadIdx.x + 1;
 
-            p.vx += delta * p.Fx;
-            p.vy += delta * p.Fy;
-        }
+    Particle& p = newParticles[coords2index(i, j, width)];
+    Particle& p0 = particles[coords2index(i, j, width)];
+
+    Particle& p1 = newParticles[coords2index(i + 1, j, width)];
+    Particle& p2 = newParticles[coords2index(i - 1, j, width)];
+    Particle& p3 = newParticles[coords2index(i, j + 1, width)];
+    Particle& p4 = newParticles[coords2index(i, j - 1, width)];
+
+    float a = (delta * viscosity) / (dx * dx);
+    float a_inv = 1 + 4 * a;
+
+    p.vx = (p0.vx + a * (p1.vx + p2.vx + p3.vx + p4.vx)) / a_inv;
+    p.vy = (p0.vy + a * (p1.vy + p2.vy + p3.vy + p4.vy)) / a_inv;
+    p.smoke = (p0.smoke + a * (p1.smoke + p2.smoke + p3.smoke + p4.smoke)) / a_inv;
+
+}
+
+void Fluid::diffuse(float delta, float viscosity){
+
+    cudaMemcpy(particles2_CUDA, particles1_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
+
+    for(uint k = 0; k < gs_iters; k++){             
+
+        diffuse_kernel<<<width - 2, height - 2>>>(particles2_CUDA, particles1_CUDA, delta, dx, viscosity, width, height);
+
+        set_boundaries(particles2_CUDA, width, height, 1);
+        set_boundaries(particles2_CUDA, width, height, 2);
+        set_boundaries(particles2_CUDA, width, height, 5);
+
     }
+
+    cudaMemcpy(particles1_CUDA, particles2_CUDA, width * height * sizeof(Particle), cudaMemcpyDeviceToDevice);
+
 }
 
 
@@ -242,17 +217,6 @@ void incompressibility_update_kernel(Particle* particles, float delta, float dx,
 }
 
 
-void Fluid::pressure_iteration(float delta, uint i, uint j){
-    Particle& p = particles[coords2index(i, j, width)];
-
-    Particle& p1 = particles[coords2index(i + 1, j, width)];
-    Particle& p2 = particles[coords2index(i - 1, j, width)];
-
-    Particle& p3 = particles[coords2index(i, j + 1, width)];
-    Particle& p4 = particles[coords2index(i, j - 1, width)];
-
-    p.p = (p1.p + p2.p + p3.p + p4.p - p.div * dx * dx / delta) / 4;
-}
 
 void Fluid::incompressibility(float delta){
 
@@ -528,113 +492,25 @@ void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_
 }
 
 
-
-
-void Fluid::diffuse_sector(Particle* newParticles, float delta, float viscosity, uint start, uint end){
-        for(uint i = start; i < end; i++){
-
-        if(i == 0 || i == width - 1){
-            continue;
-        }
-
-        for(uint j = 1; j < height - 1; j++){
-            diffuse_iteration(newParticles, delta, viscosity, i, j);
-        }
-    }
+void Fluid::advect_iteration(Particle* newParticles, float delta, uint i, uint j){
 }
-
-
 
 void Fluid::advect_sector(Particle* newParticles, float delta, uint start, uint end){
-
-    for(uint i = start; i < end; i++){
-
-        if(i == 0 || i == width - 1){
-            continue;
-        }
-
-        for(uint j = 1; j < height - 1; j++){
-            advect_iteration(newParticles, delta, i, j);
-        }
-    }
-
 }
 
-__global__
-void advect_kernel(Particle* particles, float delta, uint width, uint height, float dx){
-
-    uint i = blockIdx.x + 1;
-    uint j = threadIdx.x + 1;
-
-    // SEMI-LAGRANGIAN METHOD FOR SOLVING ADVECTION EQUATION
-    
-    Particle& p0 = particles[coords2index(i, j, width)];
-
-    float vx = p0.vx;
-    float vy = p0.vy;
-
-    float x = i - delta * vx / dx;
-    float y = j - delta * vy / dx;
-
-    if(x < 0.5){
-        x = 0.5;
-    }
-
-    if(x > width - 1.5){
-        x = width - 1.5;
-    }
-
-    if(y < 0.5){
-        y = 0.5;
-    }
-
-    if(y > height - 1.5){
-        y = height - 1.5;
-    }
-
-    float x0 = (uint) x;
-    float y0 = (uint) y;
-
-    float x1 = x0 + 1;
-    float y1 = y0 + 1;
-
-    float k1 = x - x0;
-    float k2 = 1 - k1;
-    float k3 = y - y0;
-    float k4 = 1 - k3;
-
-    Particle& p1 = particles[coords2index(x0, y0, width)];
-    Particle& p2 = particles[coords2index(x1, y0, width)];
-    Particle& p3 = particles[coords2index(x0, y1, width)];
-    Particle& p4 = particles[coords2index(x1, y1, width)];
-
-    Particle& p = particles[coords2index(i, j, width)];
-
-    p.vx = k2 * (k4 * p1.vx + k3 * p3.vx) + k1 * (k4 * p2.vx + k3 * p4.vx);
-    p.vy = k2 * (k4 * p1.vy + k3 * p3.vy) + k1 * (k4 * p2.vy + k3 * p4.vy);
-
-    p.smoke = k2 * (k4 * p1.smoke + k3 * p3.smoke) + k1 * (k4 * p2.smoke + k3 * p4.smoke);
-
+void Fluid::diffuse_iteration(Particle* newParticles, float delta, float viscosity, uint i, uint j){
 }
 
-void Fluid::advect(float delta){
-
-    if(show_warnings){
-        float max_dt = max_delta();
-        if(max_dt < delta){
-            printf("WARNING: Advection is unstable!\n");
-            printf("         delta = %f, delta_max = %f\n", delta, max_dt);
-
-        }
-    }
-   
-    advect_kernel<<<width - 2, height - 2>>>(particles1_CUDA, delta, width, height, dx);
-
-    set_boundaries(particles1_CUDA, width, height, 1);
-    set_boundaries(particles1_CUDA, width, height, 2);
-    set_boundaries(particles1_CUDA, width, height, 5);
-
+void Fluid::diffuse_sector(Particle* newParticles, float delta, float viscosity, uint start, uint end){
 }
+
+void Fluid::pressure_iteration(float delta, uint i, uint j){
+}
+
+void Fluid::pressure_sector(float delta, uint start, uint end){
+}
+
+
 
 float Fluid::max_delta(){
     float max_vel = max_velocity();
@@ -661,17 +537,3 @@ float Fluid::max_velocity(){
     return max;
 }
 
-void Fluid::pressure_sector(float delta, uint start, uint end){
-
-    for(uint i = start; i < end; i++){
-
-        if(i == 0 || i == width - 1){
-            continue;
-        }
-
-        for(uint j = 1; j < height - 1; j++){
-            pressure_iteration(delta, i, j);
-        }
-    }
-
-}
