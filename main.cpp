@@ -12,20 +12,19 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 400;
-    float HEIGHT = 80;
+    float WIDTH = 800;
+    float HEIGHT = 160;
 
     float WINDOW_WIDTH = 1000;
     float WINDOW_HEIGHT = 200;
 
-    uint block_size = (uint) (WINDOW_WIDTH / WIDTH);
+    float scale = WINDOW_WIDTH / WIDTH;
 
     float simulation_time = 20;
     float delta = 0.001;
     uint threads = 1;
     std::string object = "wing";
-    float object_scale = HEIGHT * 0.2 / 1000;
-    object_scale = 1;
+    float object_scale = HEIGHT * 1 / 1000;
 
     int subcomputatoins = 1;
 
@@ -128,8 +127,8 @@ int main(int args, char** argv){
 
         if(frame % subcomputatoins == 0){
             window.clear();
-            t.drawParticles(window, block_size, render_energy, render_velocities, render_pressure);
-            t.draw_object(window, block_size);
+            t.drawParticles(window, scale, render_energy, render_velocities, render_pressure);
+            t.draw_object(window, scale);
             
             window.display();
 

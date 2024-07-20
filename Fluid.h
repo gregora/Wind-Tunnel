@@ -77,7 +77,7 @@ class Fluid {
         float max_delta();
         float max_velocity();
 
-        void drawParticles(sf::RenderTarget& target, int block_size, bool render_energy, bool render_velocities, bool render_pressure);
+        void drawParticles(sf::RenderTarget& target, float block_size, bool render_energy, bool render_velocities, bool render_pressure);
 
         bool show_warnings = false;
         bool debug_performance = false;

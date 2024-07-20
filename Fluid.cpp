@@ -331,7 +331,7 @@ void Fluid::set_boundaries(Particle* particles, uint width, uint height, uint id
 }
 
 
-void Fluid::drawParticles(sf::RenderTarget& target, int block_size, bool render_energy, bool render_velocities, bool render_pressure){
+void Fluid::drawParticles(sf::RenderTarget& target, float block_size, bool render_energy, bool render_velocities, bool render_pressure){
 
     auto start = std::chrono::high_resolution_clock::now();
 

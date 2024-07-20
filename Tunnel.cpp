@@ -30,7 +30,7 @@ Tunnel::~Tunnel(){
 
 
 
-void Tunnel::draw_object(sf::RenderWindow& window, uint block_size){
+void Tunnel::draw_object(sf::RenderWindow& window, float block_size){
 
     sf::RectangleShape rect(sf::Vector2f(block_size, block_size));
 
