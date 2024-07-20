@@ -5,12 +5,9 @@ The project is written in C++ with CUDA used as hardware acceleration for physic
 
 ## Showcase
 
-[sphere.webm](https://github.com/user-attachments/assets/977c7521-c4a4-4afa-98c4-17b6c00de87a)
-
-
 ### Sphere
 
-![Spherical object](render/sphere.png)
+[sphere.webm](https://github.com/user-attachments/assets/977c7521-c4a4-4afa-98c4-17b6c00de87a)
 
 A simulation of a sphere put in a wind tunnel. Above you can see a screenshot of the simulation and below the resulting graph for lift and drag.
 
