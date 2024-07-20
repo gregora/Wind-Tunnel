@@ -5,10 +5,12 @@
 #include "math.h"
 #include <thread>
 #include <chrono>
-#include "misc.h"
-#include "Tunnel.h"
 #include <fstream>
 #include <iostream>
+#include "misc.h"
+#include "Tunnel.h"
+#include "Video.h"
+
 
 int main(int args, char** argv){
 
@@ -32,7 +34,7 @@ int main(int args, char** argv){
         object_scale = HEIGHT * 0.2 / 1000;
     }
 
-    int subcomputations = 1;
+    int subcomputations = 10;
 
     bool render = false;
     bool render_energy = false;
@@ -106,6 +108,11 @@ int main(int args, char** argv){
         t.show_warnings = true;
     }
     
+    Video* video = NULL;
+
+    if(render){
+        video = new Video(WINDOW_WIDTH, WINDOW_HEIGHT, 1 / delta / subcomputations, "render/output.mp4");
+    }
 
     sf::Image icon;
     icon.loadFromFile("icon.png");
@@ -191,10 +198,21 @@ int main(int args, char** argv){
 
 
             if(render){
-                sf::Image screenshot = window.capture();
-                
-                screenshot.saveToFile("render/" + std::to_string(frame) + ".png");
-                printf("Rendered frame %d at simulation time %fs\n", frame, frame*delta);
+                //save only tunnel_texture as video
+
+                sf::Image img = tunnel_texture.getTexture().copyToImage();
+                uint8_t* pixels = new uint8_t[img.getSize().x * img.getSize().y * 4];
+                for(int i = 0; i < img.getSize().x; i++){
+                    for(int j = 0; j < img.getSize().y; j++){
+                        sf::Color color = img.getPixel(i, j);
+                        pixels[(i + j * img.getSize().x) * 4] = color.r;
+                        pixels[(i + j * img.getSize().x) * 4 + 1] = color.g;
+                        pixels[(i + j * img.getSize().x) * 4 + 2] = color.b;
+                        pixels[(i + j * img.getSize().x) * 4 + 3] = 255;
+                    }
+                }
+
+                video->write(pixels);
             }
 
         }
@@ -210,11 +228,7 @@ int main(int args, char** argv){
     }
 
     if(render){
-		printf("Rendering ...\n");
-		system(std::string(("ffmpeg -y -framerate ") + std::to_string((int) (1 / delta / subcomputations)) + std::string(" -i render/%d.png render/output.mp4 > /dev/null")).c_str());
-		printf("Deleting pngs ...\n");
-		system("rm -r render/*.png");
-		printf("Done.\n");
-	}
+        video->release();
+    }
 
 }
