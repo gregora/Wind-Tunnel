@@ -27,9 +27,9 @@ int main(int args, char** argv){
 
     float object_scale = HEIGHT * 0.3 / 1000;
     if(object == "wing"){
-        float object_scale = HEIGHT * 1 / 1000;
+        object_scale = HEIGHT * 1 / 1000;
     }else if(object == "sphere"){
-        float object_scale = HEIGHT * 0.07 / 1000;
+        object_scale = HEIGHT * 0.2 / 1000;
     }
 
     int subcomputations = 1;
