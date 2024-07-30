@@ -365,10 +365,10 @@ void Fluid::drawParticles(sf::RenderTarget& target, float block_size, bool rende
                 p_color = 0;
             } 
 
-            pixels[4 * (j * width + i) + 0] = 255;
-            pixels[4 * (j * width + i) + 1] = 255;
-            pixels[4 * (j * width + i) + 2] = 255;
-            pixels[4 * (j * width + i) + 3] = p_color;
+            pixels[4 * (j * width + i) + 0] = p_color;
+            pixels[4 * (j * width + i) + 1] = p_color;
+            pixels[4 * (j * width + i) + 2] = p_color;
+            pixels[4 * (j * width + i) + 3] = 255;
         }
     }
 
