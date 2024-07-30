@@ -14,8 +14,8 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 400;
-    float HEIGHT = 80;
+    float WIDTH = 200; //default 400
+    float HEIGHT = 40; //default 80
 
     float WINDOW_WIDTH = 1000;
     float WINDOW_HEIGHT = 200;
@@ -25,7 +25,7 @@ int main(int args, char** argv){
     float simulation_time = 20;
     float delta = 0.001;
     uint threads = 1;
-    std::string object = "sphere";
+    std::string object = "wing";
 
     float object_scale = HEIGHT * 0.3 / 1000;
     if(object == "wing"){
@@ -34,7 +34,7 @@ int main(int args, char** argv){
         object_scale = HEIGHT * 0.2 / 1000;
     }
 
-    int subcomputations = 10;
+    int subcomputations = 1;
 
     bool render = false;
     bool render_energy = false;
