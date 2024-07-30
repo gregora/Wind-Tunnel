@@ -217,10 +217,10 @@ void set_boundaries_kernel(Particle* particles, uint width, uint height, uint id
 
             if(count > 0){
                 if(identifier == 1)
-                    p.vx = p.vx;
+                    p.vx = p.vx / count;
                 
                 if(identifier == 2)
-                    p.vy = p.vy;
+                    p.vy = p.vy / count;
 
                 if(identifier == 3)
                     p.div = p.div / count;

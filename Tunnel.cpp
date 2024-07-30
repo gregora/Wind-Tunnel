@@ -133,10 +133,10 @@ void Tunnel::set_boundaries_sector(Particle* particles, uint start, uint end, ui
 
                 if(count > 0){
                     if(identifier == 1)
-                        p.vx = p.vx;
+                        p.vx = p.vx / count;
                     
                     if(identifier == 2)
-                        p.vy = p.vy;
+                        p.vy = p.vy / count;
 
                     if(identifier == 3)
                         p.div = p.div / count;
