@@ -9,7 +9,7 @@ class Tunnel : public Fluid {
 
     public:
 
-        float speed = 50;
+        float speed = 5;
         
         uint8_t* object_mask = NULL;
         uint8_t* object_mask_CUDA = NULL;

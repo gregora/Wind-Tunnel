@@ -14,10 +14,10 @@
 
 int main(int args, char** argv){
 
-    float WIDTH = 200; //default 400
-    float HEIGHT = 40; //default 80
+    float WIDTH = 400; //default 200
+    float HEIGHT = 160; //default 80
 
-    float WINDOW_WIDTH = 1000;
+    float WINDOW_WIDTH = 500;
     float WINDOW_HEIGHT = 200;
 
     float scale = WINDOW_WIDTH / WIDTH;
@@ -29,12 +29,12 @@ int main(int args, char** argv){
 
     float object_scale = HEIGHT * 0.3 / 1000;
     if(object == "wing"){
-        object_scale = HEIGHT * 1 / 1000;
+        object_scale = HEIGHT * 0.3 / 1000;
     }else if(object == "sphere"){
         object_scale = HEIGHT * 0.2 / 1000;
     }
 
-    int subcomputations = 1;
+    int subcomputations = 5;
 
     bool render = false;
     bool render_energy = false;
@@ -97,8 +97,8 @@ int main(int args, char** argv){
     Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, object_scale, threads, 20, 50);
     t.debug_performance = true;
     t.threads = threads;
-    t.gs_iters_diffuse = 100;
-    t.gs_iters_incompressibility = 100;
+    t.gs_iters_diffuse = 20;
+    t.gs_iters_incompressibility = 20;
     if (auto_delta && render){
             printf("ERROR: Rendering with auto delta is not possible!\n");
             return 1;
@@ -163,7 +163,7 @@ int main(int args, char** argv){
         }
 
         if(auto_delta){
-            delta = t.max_delta()*0.1;
+            delta = t.max_delta()*0.3;
         }
 
         auto start = std::chrono::high_resolution_clock::now();
