@@ -1,6 +1,6 @@
 #include "Tunnel.h"
 
-Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float scale, uint threads, uint gs_iters, float speed) : Fluid(width, height, dx) {
+Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float scale, uint threads, uint gs_iters, float speed, float angle) : Fluid(width, height, dx) {
 
     threads = threads;
     gs_iters = gs_iters;
@@ -15,9 +15,18 @@ Tunnel::Tunnel(std::string object_file, uint width, uint height, float dx, float
     for(int i = 0; i < width; i++){
         for(int j = 0; j < height; j++){
 
-            
-            float object_x = object.getSize().x/2 + ((i - (float) width/5) / scale);
-            float object_y = object.getSize().y/2 + ((j - (float) height/2) / scale);
+            float r = sqrt(pow((i - (float) width/5), 2) + pow((j - (float) height/2), 2));
+            float ang1 = atan2((i - (float) width/5), (j - (float) height/2));
+
+            float new_x = -r * cos(ang1 + 3.1415/2 + 3.1415/180 * angle);
+            float new_y = r * sin(ang1 + 3.1415/2 + 3.1415/180 * angle);
+
+            float object_x = object.getSize().x/2 + (new_x / scale);
+            float object_y = object.getSize().y/2 + (new_y / scale);
+
+
+            //float object_x = object.getSize().x/2 + ((i - (float) width/5) / scale);
+            //float object_y = object.getSize().y/2 + ((j - (float) height/2) / scale);
 
             if(object_x >= 0 && object_x < object.getSize().x && object_y >= 0 && object_y < object.getSize().y){
                 object_mask[coords2index(i, height - 1 - j, width)] = object.getPixel((int) object_x, (int) object_y).a;

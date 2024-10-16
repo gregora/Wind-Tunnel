@@ -25,6 +25,7 @@ int main(int args, char** argv){
     float simulation_time = 20;
     float delta = 0.001;
     uint threads = 1;
+    float angle = 0.0f;
     std::string object = "wing";
 
     float object_scale = HEIGHT * 0.3 / 1000;
@@ -87,6 +88,10 @@ int main(int args, char** argv){
             subcomputations = atof(argv[i + 1]);
         }
 
+        if(strcmp(argv[i], "-angle") == 0){
+            angle = atof(argv[i + 1]);
+        }
+
         if(strcmp(argv[i], "-save") == 0){
             save_data = std::string(argv[i + 1]);
             save_file.open(save_data, std::ios::out | std::ios::trunc);
@@ -94,7 +99,7 @@ int main(int args, char** argv){
 
     }
 
-    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, object_scale, threads, 20, 50);
+    Tunnel t("objects/" + object + ".png", WIDTH, HEIGHT, 50.0 / HEIGHT, object_scale, threads, 20, 50, angle);
     t.debug_performance = true;
     t.threads = threads;
     t.gs_iters_diffuse = 20;

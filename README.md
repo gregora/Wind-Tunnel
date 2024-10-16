@@ -35,6 +35,7 @@ Run `make mainCUDA.out` to use `nvcc` compiler to compile for your GPU.
 ### Running
 Run `./main.out` or `./mainCUDA.out` in the root directory. The program supports the following command line arguments:
 * `-object <object name>` - the object to simulate. Only use name of the file in `/objects/` folder
+* `-angle <angle>` - the angle for which to rotate the object clock-wise around the center
 * `-energy` - shows the total energy of the system at each time step
 * `-time <time>` - sets simulation time to `<time>` seconds
 * `-velocities` - render velocity field together with smoke
