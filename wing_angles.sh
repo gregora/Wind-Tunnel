@@ -1,0 +1,9 @@
+./mainCUDA.out -angle 0.0 -save data/wing_00.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 5.0 -save data/wing_05.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 10.0 -save data/wing_10.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 15.0 -save data/wing_15.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 20.0 -save data/wing_20.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 25.0 -save data/wing_25.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 30.0 -save data/wing_30.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 35.0 -save data/wing_35.csv -time 0.02 -delta 0.0000001 &&
+./mainCUDA.out -angle 40.0 -save data/wing_40.csv -time 0.02 -delta 0.0000001 &&
